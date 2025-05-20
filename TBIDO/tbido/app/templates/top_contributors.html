@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+/* Fade-in animation */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Card styling */
+.card-horizontal {
+    display: flex;
+    flex-direction: row;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-horizontal:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+.card-horizontal img {
+    width: 200px;
+    object-fit: cover;
+    border-radius: 8px 0 0 8px;
+}
+.card-horizontal .card-body {
+    flex: 1;
+}
+
+/* Modal */
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+}
+.image-modal .close-modal {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+}
+.image-modal .modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+</style>
+
+<div class="container my-5">
+    <h2 class="mb-4"><span class='highlight'>Top Contributors</span></h2>
+    <div class="row g-4">
+        {% for top_contributor in top_contributors %}
+        <div class="col-12 fade-in">
+            <div class="card card-horizontal">
+
+                <img src="{{ top_contributor.member_picture.url }}" class="img-fluid card-img-left clickable-img" alt="{{ top_contributor.member_name }}">
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ top_contributor.member_name }}</h5>
+                    {% if top_contributor.role %}
+                    <p class="card-text"><strong>Role:</strong> {{ top_contributor.role }}</p>
+                    {% endif %}
+                    {% if top_contributor.season %}
+                    <p class="card-text"><strong>Season:</strong> {{ top_contributor.season }}</p>
+                    {% endif %}
+                    {% if top_contributor.mentoring_session %}
+                    <p class="card-text"><strong>Session:</strong> {{ top_contributor.mentoring_session }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="image-modal">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="img01">
+    <div id="caption"></div>
+</div>
+
+<script>
+// Image modal popup
+const modal = document.getElementById("imageModal");
+const modalImg = document.getElementById("img01");
+const captionText = document.getElementById("caption");
+const images = document.querySelectorAll('.clickable-img');
+
+images.forEach(img => {
+    img.onclick = () => {
+        modal.style.display = "block";
+        modalImg.src = img.src;
+        captionText.innerHTML = img.alt;
+    }
+});
+document.querySelector(".close-modal").onclick = () => modal.style.display = "none";
+
+// Fade-in animation
+function fadeInOnScroll() {
+    const fadeElems = document.querySelectorAll('.fade-in');
+    fadeElems.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 100) {
+            el.classList.add('visible');
+        }
+    });
+}
+window.addEventListener('scroll', fadeInOnScroll);
+window.addEventListener('load', fadeInOnScroll);
+</script>
+{% endblock %}

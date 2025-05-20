@@ -1,0 +1,648 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+{% load static %}
+{% load widget_tweaks %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+  .highlight {
+    font-weight: 700;
+    background: linear-gradient(to right, #74172d, #2a4378);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .card-section {
+    background: #f3f4f7;
+    border: 3px solid transparent;
+    border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+  }
+  .card-section.pop-in { opacity: 1; transform: translateY(0); }
+  .form-control { border-radius: 12px; }
+  label { font-weight: 600; }
+  .field-container {
+    position: relative;
+    margin-bottom: 20px;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 15px;
+    padding: 15px 15px 15px 45px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  .edit-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #2a4378;
+  }
+  .profile-pic-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 4px solid;
+    border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
+  .save-profile-btn { display: none; }
+</style>
+<script>
+function previewProfilePicture(input) {
+  const preview = document.getElementById('profile-preview');
+  const file = input.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      preview.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+}
+</script>
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h2 class="highlight">{{ form.instance.firstName }} {{ form.instance.lastName }}'s Profile</h2>
+  </div>
+
+  <form method="POST" enctype="multipart/form-data" id="profile-form" novalidate>
+    {% csrf_token %}
+    <div class="row">
+      <!-- LEFT COLUMN: Profile Picture -->
+    <div class="col-md-4">
+      <div class="profile-pic-container">
+          <img id="profile-preview" src="{{ form.instance.IDPicture.url }}" alt="Profile Picture" class="profile-pic">
+
+        <div class="field-container">
+          <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+          <label for="{{ form.IDPicture.id_for_label }}">To change Profile Picture, tick the "Pencil" Icon first, then choose your file.</label>
+          {% render_field form.IDPicture class="form-control" onchange="previewProfilePicture(this)" %}
+        </div>
+
+        <button type="submit" class="btn btn-primary rounded-pill px-4 mt-2 save-profile-btn">Save Changes</button>
+      </div>
+    </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="col-md-8">
+
+        <!-- Personal Info -->
+        <div class="card-section">
+          <h4 class="highlight">Personal Information</h4>
+          <p>Please provide your personal details</p>
+
+          <!-- First Name -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.firstName.id_for_label }}">First Name</label>
+            {% render_field form.firstName class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Last Name -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.lastName.id_for_label }}">Last Name</label>
+            {% render_field form.lastName class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Age -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.age.id_for_label }}">Age</label>
+            {% render_field form.age class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Address -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.address.id_for_label }}">Address</label>
+            {% render_field form.address class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Mobile Number -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.mobileNumber.id_for_label }}">Mobile Number</label>
+            {% render_field form.mobileNumber class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Email -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.email.id_for_label }}">Email Address</label>
+            {% render_field form.email class="form-control" readonly="readonly" %}
+          </div>
+        </div>
+
+        <!-- Educational or Employment -->
+        <div class="card-section">
+          <h4 class="highlight">Educational or Employment Background</h4>
+          <p>Select and complete the appropriate fields based on your current status (student, employee, entrepreneur).</p>
+
+          <!-- Course -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.courses.id_for_label }}">Course (if student)</label>
+            {% render_field form.courses class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Year Level -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.yearlevel.id_for_label }}">Section & Year Level (student) or Years In Employment or Business (non-student)</label>
+            {% render_field form.yearlevel class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Employment Date -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.employmentDate.id_for_label }}">Employment or Enrollment Date</label>
+            {% render_field form.employmentDate class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Status -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.status.id_for_label }}">Status of Employment</label>
+            {% render_field form.status class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Student Number -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.studentNumber.id_for_label }}">Student Number (if applicable)</label>
+            {% render_field form.studentNumber class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Rank -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.rank.id_for_label }}">Academic Rank (if applicable)</label>
+            {% render_field form.rank class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Affiliation -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.affiliation.id_for_label }}">Technology or Business Skillset</label>
+            {% render_field form.affiliation class="form-control" readonly="readonly" %}
+          </div>
+        </div>
+
+        <!-- Professional Details -->
+        <div class="card-section">
+          <h4 class="highlight">Professional Details</h4>
+          <p>Fill in your current professional or business information.</p>
+
+          <!-- Occupation -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.occupation.id_for_label }}">Occupation or Job Title</label>
+            {% render_field form.occupation class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Company Name -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.companyName.id_for_label }}">Affiliation (if student) or Company Name (if employed or entrepreneur)</label>
+            {% render_field form.companyName class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- Salary Grade -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.salaryGrade.id_for_label }}">Salary Grade (if employed)</label>
+            {% render_field form.salaryGrade class="form-control" readonly="readonly" %}
+          </div>
+
+          <!-- TIN -->
+          <div class="field-container">
+            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>
+            <label for="{{ form.tin.id_for_label }}">Tax Identification Number (TIN)</label>
+            {% render_field form.tin class="form-control" readonly="readonly" %}
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Pop-in animation
+  window.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.card-section').forEach((card, i) => {
+      setTimeout(() => card.classList.add('pop-in'), i * 200);
+    });
+  });
+
+  // Enable editing on pencil click
+  function enableField(icon) {
+    let container = icon.closest('.field-container');
+    let input = container.querySelector('input, select, textarea');
+    input.removeAttribute('readonly');
+    input.focus();
+    document.querySelector('.save-profile-btn').style.display = 'inline-block';
+  }
+</script>
+
+
+<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">-->
+
+<!--<style>-->
+<!--  .highlight {-->
+<!--    font-weight: 700;-->
+<!--    background: linear-gradient(to right, #74172d, #2a4378);-->
+<!--    -webkit-background-clip: text;-->
+<!--    -webkit-text-fill-color: transparent;-->
+<!--  }-->
+<!--  .card-section {-->
+<!--    background: #f3f4f7;-->
+<!--    border: 3px solid transparent;-->
+<!--    border-image: linear-gradient(to right, #74172d, #2a4378) 1;-->
+<!--    border-radius: 20px;-->
+<!--    padding: 30px;-->
+<!--    margin-bottom: 30px;-->
+<!--    box-shadow: 0 4px 10px rgba(0,0,0,0.1);-->
+<!--    opacity: 0;-->
+<!--    transform: translateY(30px);-->
+<!--    transition: all 0.6s ease;-->
+<!--  }-->
+<!--  .card-section.pop-in {-->
+<!--    opacity: 1;-->
+<!--    transform: translateY(0);-->
+<!--  }-->
+<!--  .form-control {-->
+<!--    border-radius: 12px;-->
+<!--  }-->
+<!--  label {-->
+<!--    font-weight: 600;-->
+<!--  }-->
+<!--  .field-container {-->
+<!--    position: relative;-->
+<!--    margin-bottom: 20px;-->
+<!--    background: #fff;-->
+<!--    border: 2px solid #e0e0e0;-->
+<!--    border-radius: 15px;-->
+<!--    padding: 15px 15px 15px 45px;-->
+<!--    box-shadow: 0 2px 5px rgba(0,0,0,0.05);-->
+<!--  }-->
+<!--  .edit-icon {-->
+<!--    position: absolute;-->
+<!--    top: 50%;-->
+<!--    left: 15px;-->
+<!--    transform: translateY(-50%);-->
+<!--    cursor: pointer;-->
+<!--    color: #2a4378;-->
+<!--  }-->
+<!--  .profile-pic-container {-->
+<!--    text-align: center;-->
+<!--    margin-bottom: 20px;-->
+<!--  }-->
+<!--  .profile-pic {-->
+<!--    width: 150px;-->
+<!--    height: 150px;-->
+<!--    border-radius: 50%;-->
+<!--    border: 4px solid;-->
+<!--    border-image: linear-gradient(to right, #74172d, #2a4378) 1;-->
+<!--    object-fit: cover;-->
+<!--    margin-bottom: 10px;-->
+<!--  }-->
+<!--  .save-profile-btn {-->
+<!--    display: none;-->
+<!--  }-->
+<!--</style>-->
+
+<!--<div class="container py-5">-->
+<!--  <div class="text-center mb-5">-->
+<!--    <h2 class="highlight">{{ form.instance.firstName }} {{ form.instance.lastName }}'s Profile</h2>-->
+<!--  </div>-->
+
+<!--  <form method="POST" enctype="multipart/form-data" id="profile-form" novalidate>-->
+<!--    {% csrf_token %}-->
+
+<!--    <div class="row">-->
+      <!-- LEFT COLUMN: Profile Picture & Save Button -->
+<!--      <div class="col-md-4">-->
+<!--        <div class="profile-pic-container">-->
+<!--          {% if form.instance.IDPicture %}-->
+<!--            <img src="{{ form.instance.IDPicture.url }}" alt="Profile Picture" class="profile-pic">-->
+<!--          {% else %}-->
+<!--            <img src="{% static 'default_profile.png' %}" alt="Profile Picture" class="profile-pic">-->
+<!--          {% endif %}-->
+<!--          <div class="field-container">-->
+<!--            <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--            <label for="{{ form.IDPicture.id_for_label }}">Change Profile Picture</label>-->
+<!--            {% render_field form.IDPicture class="form-control" %}-->
+<!--          </div>-->
+<!--          <button type="submit" class="btn btn-primary rounded-pill px-4 mt-2 save-profile-btn">Save Changes</button>-->
+<!--        </div>-->
+<!--      </div>-->
+
+      <!-- RIGHT COLUMN: Form Details -->
+<!--      <div class="col-md-8">-->
+
+        <!-- Section 1 -->
+<!--        <div class="card-section">-->
+<!--          <h4 class="highlight">Personal Information</h4>-->
+<!--          <p>Please provide your personal details</p>-->
+
+<!--          {% for field in form.visible_fields %}-->
+<!--            {% if field.name in "firstName lastName age address mobileNumber email pictureFullBody" %}-->
+<!--              <div class="field-container">-->
+<!--                <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--                <label for="{{ field.id_for_label }}">{{ field.label }}</label>-->
+<!--                {% render_field field class="form-control" readonly="readonly" %}-->
+<!--              </div>-->
+<!--            {% endif %}-->
+<!--          {% endfor %}-->
+
+<!--        </div>-->
+
+        <!-- Section 2 -->
+<!--        <div class="card-section">-->
+<!--          <h4 class="highlight">Educational or Employment Background</h4>-->
+<!--          <p>Select and complete the appropriate fields based on your current status (student, employee, entrepreneur).</p>-->
+
+<!--          {% for field in form.visible_fields %}-->
+<!--            {% if field.name in "courses yearlevel employmentDate status studentNumber rank affiliation" %}-->
+<!--              <div class="field-container">-->
+<!--                <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--                <label for="{{ field.id_for_label }}">{{ field.label }}</label>-->
+<!--                {% render_field field class="form-control" readonly="readonly" %}-->
+<!--              </div>-->
+<!--            {% endif %}-->
+<!--          {% endfor %}-->
+
+<!--        </div>-->
+
+        <!-- Section 3 -->
+<!--        <div class="card-section">-->
+<!--          <h4 class="highlight">Professional Details</h4>-->
+<!--          <p>Fill in your current professional or business information.</p>-->
+
+<!--          {% for field in form.visible_fields %}-->
+<!--            {% if field.name in "occupation companyName salaryGrade tin" %}-->
+<!--              <div class="field-container">-->
+<!--                <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--                <label for="{{ field.id_for_label }}">{{ field.label }}</label>-->
+<!--                {% render_field field class="form-control" readonly="readonly" %}-->
+<!--              </div>-->
+<!--            {% endif %}-->
+<!--          {% endfor %}-->
+
+<!--        </div>-->
+
+<!--      </div>-->
+<!--    </div>-->
+
+<!--  </form>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--  window.addEventListener('DOMContentLoaded', () => {-->
+<!--    document.querySelectorAll('.card-section').forEach((card, i) => {-->
+<!--      setTimeout(() => card.classList.add('pop-in'), i * 200);-->
+<!--    });-->
+<!--  });-->
+
+<!--  function enableField(icon) {-->
+<!--    let container = icon.closest('.field-container');-->
+<!--    let input = container.querySelector('input, select, textarea');-->
+<!--    input.removeAttribute('readonly');-->
+<!--    input.focus();-->
+<!--    document.querySelector('.save-profile-btn').style.display = 'inline-block';-->
+<!--  }-->
+<!--</script>-->
+
+<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">-->
+
+<!--<style>-->
+<!--  .highlight {-->
+<!--    font-weight: 700;-->
+<!--    background: linear-gradient(to right, #74172d, #2a4378);-->
+<!--    -webkit-background-clip: text;-->
+<!--    -webkit-text-fill-color: transparent;-->
+<!--  }-->
+<!--  .card-section {-->
+<!--    background: #f3f4f7;-->
+<!--    border: 3px solid transparent;-->
+<!--    border-image: linear-gradient(to right, #74172d, #2a4378) 1;-->
+<!--    border-radius: 20px;-->
+<!--    padding: 30px;-->
+<!--    margin-bottom: 30px;-->
+<!--    box-shadow: 0 4px 10px rgba(0,0,0,0.1);-->
+<!--    opacity: 0;-->
+<!--    transform: translateY(30px);-->
+<!--    transition: all 0.6s ease;-->
+<!--  }-->
+<!--  .card-section.pop-in {-->
+<!--    opacity: 1;-->
+<!--    transform: translateY(0);-->
+<!--  }-->
+<!--  .form-control {-->
+<!--    border-radius: 12px;-->
+<!--  }-->
+<!--  label {-->
+<!--    margin-top: 10px;-->
+<!--    font-weight: 600;-->
+<!--  }-->
+<!--  .field-container {-->
+<!--    position: relative;-->
+<!--    margin-bottom: 20px;-->
+<!--  }-->
+<!--  .edit-icon {-->
+<!--    position: absolute;-->
+<!--    top: 8px;-->
+<!--    right: 10px;-->
+<!--    cursor: pointer;-->
+<!--    color: #2a4378;-->
+<!--  }-->
+<!--  .profile-pic-container {-->
+<!--    text-align: center;-->
+<!--    margin-bottom: 20px;-->
+<!--  }-->
+<!--  .profile-pic {-->
+<!--    width: 150px;-->
+<!--    height: 150px;-->
+<!--    border-radius: 50%;-->
+<!--    border: 4px solid;-->
+<!--    border-image: linear-gradient(to right, #74172d, #2a4378) 1;-->
+<!--    object-fit: cover;-->
+<!--    margin-bottom: 10px;-->
+<!--  }-->
+<!--  .save-profile-btn {-->
+<!--    display: none;-->
+<!--  }-->
+<!--</style>-->
+
+<!--<div class="container py-5">-->
+<!--  <div class="text-center mb-5">-->
+<!--    <h2 class="highlight">{{ form.instance.firstName }} {{ form.instance.lastName }}'s Profile</h2>-->
+<!--  </div>-->
+
+<!--  <form method="POST" enctype="multipart/form-data" id="profile-form" novalidate>-->
+<!--    {% csrf_token %}-->
+
+    <!-- Profile Picture -->
+<!--    <div class="profile-pic-container">-->
+<!--      {% if form.instance.IDPicture %}-->
+<!--        <img src="{{ form.instance.IDPicture.url }}" alt="Profile Picture" class="profile-pic">-->
+<!--      {% else %}-->
+<!--        <img src="{% static 'default_profile.png' %}" alt="Profile Picture" class="profile-pic">-->
+<!--      {% endif %}-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.IDPicture.id_for_label }}">Change Profile Picture</label>-->
+<!--        {{ form.IDPicture }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <button type="submit" class="btn btn-primary rounded-pill px-4 mt-2 save-profile-btn">Save Changes</button>-->
+<!--    </div>-->
+
+    <!-- Section 1: Personal Information -->
+<!--    <div class="card-section">-->
+<!--      <h4 class="highlight">Personal Information</h4>-->
+<!--      <p>Please provide your personal details</p>-->
+
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.firstName.id_for_label }}">First Name</label>-->
+<!--        {{ form.firstName }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.lastName.id_for_label }}">Last Name</label>-->
+<!--        {{ form.lastName }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.age.id_for_label }}">Age</label>-->
+<!--        {{ form.age }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.address.id_for_label }}">Address</label>-->
+<!--        {{ form.address }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.mobileNumber.id_for_label }}">Mobile Number</label>-->
+<!--        {{ form.mobileNumber }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.email.id_for_label }}">Email Address</label>-->
+<!--        {{ form.email }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.pictureFullBody.id_for_label }}">Proof of ID</label>-->
+<!--        {{ form.pictureFullBody }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--    </div>-->
+
+    <!-- Section 2: Educational or Employment Background -->
+<!--    <div class="card-section">-->
+<!--      <h4 class="highlight">Educational or Employment Background</h4>-->
+<!--      <p>Select and complete the appropriate fields based on your current status (student, employee, entrepreneur).</p>-->
+
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.courses.id_for_label }}">Course (if student)</label>-->
+<!--        {{ form.courses }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.yearlevel.id_for_label }}">Section & Year Level or Years in Employment</label>-->
+<!--        {{ form.yearlevel }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.employmentDate.id_for_label }}">Employment or Enrollment Date</label>-->
+<!--        {{ form.employmentDate }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.status.id_for_label }}">Status of Employment</label>-->
+<!--        {{ form.status }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.studentNumber.id_for_label }}">Student Number</label>-->
+<!--        {{ form.studentNumber }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.rank.id_for_label }}">Academic Rank</label>-->
+<!--        {{ form.rank }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.affiliation.id_for_label }}">Skillset</label>-->
+<!--        {{ form.affiliation }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--    </div>-->
+
+    <!-- Section 3: Professional Details -->
+<!--    <div class="card-section">-->
+<!--      <h4 class="highlight">Professional Details</h4>-->
+<!--      <p>Fill in your current professional or business information.</p>-->
+
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.occupation.id_for_label }}">Occupation</label>-->
+<!--        {{ form.occupation }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.companyName.id_for_label }}">Company Name / Affiliation</label>-->
+<!--        {{ form.companyName }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.salaryGrade.id_for_label }}">Salary Grade</label>-->
+<!--        {{ form.salaryGrade }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--      <div class="field-container">-->
+<!--        <label for="{{ form.tin.id_for_label }}">Tax Identification Number (TIN)</label>-->
+<!--        {{ form.tin }}-->
+<!--        <i class="bi bi-pencil-fill edit-icon" onclick="enableField(this)"></i>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--  </form>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--  window.addEventListener('DOMContentLoaded', () => {-->
+<!--    document.querySelectorAll('.card-section').forEach((card, i) => {-->
+<!--      setTimeout(() => card.classList.add('pop-in'), i * 200);-->
+<!--    });-->
+<!--  });-->
+
+<!--  function enableField(icon) {-->
+<!--    let container = icon.closest('.field-container');-->
+<!--    let input = container.querySelector('input, select, textarea');-->
+<!--    input.removeAttribute('readonly');-->
+<!--    input.focus();-->
+<!--    document.querySelector('.save-profile-btn').style.display = 'inline-block';-->
+<!--  }-->
+<!--</script>-->
+
+{% endblock %}

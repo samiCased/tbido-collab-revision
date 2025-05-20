@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load widget_tweaks %}
+<style>
+ .centered-form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 56px); /* Adjust based on navbar height */
+    }
+
+    /* FadeIn Animation */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+   .fade-in {
+        animation-name: fadeIn;
+        animation-duration: 2s; /* Duration of the animation */
+        animation-fill-mode: forwards; /* Keeps the element in the state after the animation ends */
+    }
+</style>
+
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+    <!-- Apply the fade-in class to the form container -->
+    <div class="bg-white p-5 rounded shadow fade-in">
+        <h2 class="text-center mb-4">Register</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-check-label">{{ field.label }}</label>
+                    {{ field|add_class:"form-control" }}
+                    {% if field.errors %}
+                        <small class="form-text text-danger">{{ field.errors }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type='submit' class="btn btn-primary btn-danger w-100">Sign Up</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    this.nextSibling.classList.remove('text-danger');
+                } else {
+                    this.classList.add('is-invalid');
+                    this.nextSibling.classList.add('text-danger');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

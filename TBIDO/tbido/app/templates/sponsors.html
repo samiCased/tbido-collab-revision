@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Sponsorships{% endblock %}
+
+{% block content %}
+
+<style>
+   .img-thumbnail {
+        width: 700px;
+        height: 650px;
+    }
+   .post-img-thumbnail {
+        width: 345px;
+        height: 300px;
+    }
+</style>
+
+<!-- News Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center"> <!-- Add justify-content-center here -->
+        {% for sponsorpost in sponsorposts %}
+        <div class="col-md-8 mb-4">
+            <div class="card shadow-lg border-dark">
+                <!-- Use the img-thumbnail class without overriding its width and height -->
+                <div class="card-body">
+                    <h5 class="card-title"><strong>{{ sponsorpost.title }}</strong></h5>
+                    <p class="card-text">{{ sponsorpost.content|safe }}</p>
+                </div>
+            </div>
+
+        </div>
+
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

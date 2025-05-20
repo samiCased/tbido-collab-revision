@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+body {
+    background-color: #f5f5f5;
+}
+
+/* Gradient border highlight */
+.gradient-border {
+    border: 4px solid;
+    border-image-slice: 1;
+    border-width: 4px;
+    border-image-source: linear-gradient(to right, #701127, #2a4378);
+    border-radius: 20px;
+    background-color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 20px;
+}
+
+.gradient-border:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Banner image styling */
+.post-banner {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+}
+
+.post-banner:hover {
+    transform: scale(1.01);
+}
+
+/* Post Container */
+.post-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Post Title */
+.post-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #701127;
+}
+
+/* Post Date */
+.post-meta {
+    color: #777;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+/* Post Content */
+.post-content {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #333;
+}
+
+/* Related Posts Sidebar */
+.related-posts-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #701127;
+    margin-bottom: 20px;
+}
+
+.thumbnail-card {
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 3px solid transparent;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.thumbnail-card:hover {
+    transform: scale(1.03);
+    border: 3px solid #701127;
+}
+
+.thumbnail-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.thumbnail-body {
+    padding: 15px;
+}
+
+.thumbnail-body h5 {
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 600;
+    color: #2a2a2a;
+}
+
+.thumbnail-body p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Responsive Layout */
+@media (min-width: 992px) {
+    .main-container {
+        display: flex;
+        gap: 40px;
+        padding: 40px;
+    }
+
+    .main-content {
+        flex: 3;
+    }
+
+    .sidebar {
+        flex: 1;
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+}
+</style>
+
+<div class="main-container">
+    <!-- Main Post Content -->
+    <div class="main-content">
+        <div class="post-container">
+            {% if post.related_picture %}
+            <img src="{{ post.related_picture.url }}" alt="{{ post.title }}" class="post-banner">
+            {% endif %}
+            <div class="gradient-border">
+                <h1 class="post-title">{{ post.title }}</h1>
+                <p class="post-meta">Posted on {{ post.created_at|date:"F d, Y" }} | Tag: {{ post.tag.name }}</p>
+                <div class="post-content">
+                    {{ post.content|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Posts -->
+    <div class="sidebar">
+        <h3 class="related-posts-title">You might also like</h3>
+        {% for related_post in related_posts %}
+        <a href="{% url 'post_detail' related_post.pk %}" style="text-decoration: none;">
+            <div class="thumbnail-card">
+                {% if related_post.related_picture %}
+                <img src="{{ related_post.related_picture.url }}" alt="{{ related_post.title }}">
+                {% endif %}
+                <div class="thumbnail-body">
+                    <h5>{{ related_post.title }}</h5>
+                    <p>{{ related_post.tag.name }}</p>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

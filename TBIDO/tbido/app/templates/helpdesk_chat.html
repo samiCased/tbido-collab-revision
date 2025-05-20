@@ -1,0 +1,248 @@
+<style>
+    #helpdesk-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .highlight {
+        font-weight: 700;
+        background: linear-gradient(to right, #74172d, #2a4378);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    #helpdesk-bubble {
+        background-color: white;
+        border: 2px solid #2a4378;
+        padding: 10px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        z-index: 2;
+        transition: all 0.5s ease-in-out;
+        position: relative;
+        width: 250px;
+    }
+
+    #helpdesk-chat {
+        display: none;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transform: scale(0.9);
+        transition: opacity 0.3s ease, transform 0.3s ease, height 0.3s ease;
+    }
+
+    #helpdesk-chat.open {
+        display: block;
+        opacity: 1;
+        transform: scale(1);
+        height: 400px;
+    }
+
+    #helpdesk-messages {
+        height: 300px;
+        overflow-y: scroll;
+        padding: 10px;
+    }
+
+    .text-start {
+        text-align: left;
+        background-color: #f1f1f1;
+        border-radius: 10px;
+        padding: 8px;
+        margin-right: auto;
+        max-width: 80%;
+    }
+
+    .text-end {
+        text-align: right;
+        background-color: #cce5ff;
+        border-radius: 10px;
+        padding: 8px;
+        margin-left: auto;
+        max-width: 80%;
+    }
+
+    .helpdesk-message {
+        margin-bottom: 10px;
+        display: block;
+        clear: both;
+    }
+
+    .sending-status {
+        font-size: 0.8rem;
+        color: gray;
+    }
+
+    .system-message {
+        text-align: center;
+        color: #888;
+        font-style: italic;
+        margin-bottom: 10px;
+    }
+
+    .chat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #000;
+        color: white;
+        padding: 10px 15px;
+    }
+
+    .chat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(to right, #74172d, #2a4378); /* Gradient applied to header */
+        color: white;
+        padding: 10px 15px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    
+    .chat-header .highlight {
+        font-size: 1.1rem;
+        font-weight: bold;
+        background: none;
+        -webkit-text-fill-color: white;
+        -webkit-background-clip: unset;
+    }
+    
+    .minimize-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+    
+    .minimize-btn:hover {
+        color: #ccc;
+    }
+</style>
+
+<div id="helpdesk-container">
+    <div id="helpdesk-bubble" class="highlight">Chat with us!</div>
+
+    <div id="helpdesk-chat" class="card">
+        <div class="chat-header">
+            <span class="highlight">Helpdesk</span>
+            <button class="minimize-btn" id="minimize-helpdesk" title="Minimize">&times;</button>
+        </div>
+
+        <div id="helpdesk-messages" class="card-body"></div>
+
+        <div class="card-footer p-2">
+            <form id="helpdesk-form">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" name="message" id="helpdesk-input" class="form-control" placeholder="Type a message..." required>
+                    <button class="btn btn-primary" type="submit">Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const helpdeskBubble = document.getElementById("helpdesk-bubble");
+    const helpdeskChat = document.getElementById("helpdesk-chat");
+    const helpdeskForm = document.getElementById("helpdesk-form");
+    const helpdeskInput = document.getElementById("helpdesk-input");
+    const helpdeskMessages = document.getElementById("helpdesk-messages");
+    const minimizeButton = document.getElementById("minimize-helpdesk");
+
+    let lastTimestamp = null;
+    let shownMessages = new Set();
+    let firstOpen = true;
+
+    helpdeskBubble.addEventListener("click", () => {
+        helpdeskChat.classList.add("open");
+
+        helpdeskBubble.style.opacity = '0';
+        helpdeskBubble.style.height = '0';
+        helpdeskBubble.style.padding = '0';
+
+        if (firstOpen) {
+            const welcome = document.createElement("div");
+            welcome.className = "system-message";
+            welcome.textContent = "Welcome to the Helpdesk! Ask about anything about us!";
+            helpdeskMessages.appendChild(welcome);
+            helpdeskMessages.scrollTop = helpdeskMessages.scrollHeight;
+            firstOpen = false;
+        }
+    });
+
+    minimizeButton.addEventListener("click", () => {
+        helpdeskChat.classList.remove("open");
+
+        helpdeskBubble.style.opacity = '1';
+        helpdeskBubble.style.height = 'auto';
+        helpdeskBubble.style.padding = '10px 15px';
+    });
+
+    helpdeskForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const message = helpdeskInput.value.trim();
+        if (!message) return;
+
+        fetch("{% url 'helpdesk_send' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                "X-Requested-With": "XMLHttpRequest",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `message=${encodeURIComponent(message)}`
+        }).then(res => res.json()).then(data => {
+            if (data.status !== "sent") {
+                const error = document.createElement("div");
+                error.className = "system-message";
+                error.textContent = "Message failed to send.";
+                helpdeskMessages.appendChild(error);
+                helpdeskMessages.scrollTop = helpdeskMessages.scrollHeight;
+            }
+        });
+
+        helpdeskInput.value = "";
+    });
+
+    function loadHelpdeskMessages() {
+        fetch("{% url 'helpdesk_messages' %}?since=" + (lastTimestamp || ""))
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(msg => {
+                    if (shownMessages.has(msg.id)) return;
+                    shownMessages.add(msg.id);
+
+                    const div = document.createElement("div");
+                    div.classList.add("helpdesk-message");
+
+                    const alignClass = msg.is_admin ? "text-start" : "text-end";
+                    div.classList.add(alignClass);
+
+                    div.innerHTML = `
+                        <div><strong>${msg.user}:</strong> ${msg.message}</div>
+                    `;
+
+                    helpdeskMessages.appendChild(div);
+                    helpdeskMessages.scrollTop = helpdeskMessages.scrollHeight;
+                    lastTimestamp = msg.timestamp;
+                });
+            });
+    }
+
+    setInterval(loadHelpdeskMessages, 3000);
+</script>

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}{{ expert.name }}{% endblock %}
+
+{% block content %}
+<style>
+    .highlight {
+        font-weight: 700;
+        background: linear-gradient(to right, #74172d, #2a4378);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fade-in {
+        opacity: 0;
+        transform: scale(0.95);
+        animation: popIn 0.6s ease forwards;
+    }
+
+    .fade-in:nth-of-type(1) { animation-delay: 0.1s; }
+    .fade-in:nth-of-type(2) { animation-delay: 0.2s; }
+    .fade-in:nth-of-type(3) { animation-delay: 0.3s; }
+    .fade-in:nth-of-type(4) { animation-delay: 0.4s; }
+    .fade-in:nth-of-type(5) { animation-delay: 0.5s; }
+
+    @keyframes popIn {
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .expert-section {
+        border: 2px solid;
+        border-image: linear-gradient(to right, #701127, #2a4378) 1;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        background: #fff;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .expert-section:hover {
+        transform: scale(1.02);
+    }
+
+    .expert-img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .badge.bg-secondary {
+        background: linear-gradient(45deg, #701127, #2a4378);
+        color: #fff;
+        font-size: 0.75rem;
+    }
+
+    .connect-btn {
+        display: block;
+        width: 100%;
+        padding: 0.6rem 1rem;
+        margin-top: 1rem;
+        background: linear-gradient(to right, #74172d, #2a4378);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+    .connect-btn:hover {
+        background: linear-gradient(to right, #2a4378, #74172d);
+        text-decoration: none;
+        color: white;
+    }
+
+    /* Layout for desktop */
+    .profile-container {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .details-column {
+        flex: 1 1 400px;
+        min-width: 300px;
+    }
+    .image-column {
+        width: 250px;
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Responsive fallback: stack vertically on small screens */
+    @media (max-width: 767px) {
+        .profile-container {
+            flex-direction: column;
+            align-items: center;
+        }
+        .details-column, .image-column {
+            width: 100%;
+            min-width: auto;
+        }
+        .image-column {
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="highlight fade-in mb-4 text-center">{{ expert.name }}</h2>
+
+    <div class="profile-container">
+        <!-- Left column: Details -->
+        <div class="details-column">
+            <div class="expert-section fade-in">
+                <h5 class="highlight">Job Title</h5>
+                <p>{{ expert.job_title }}</p>
+            </div>
+
+            <div class="expert-section fade-in">
+                <h5 class="highlight">Description</h5>
+                {{ expert.job_description|safe }}
+            </div>
+
+            <div class="expert-section fade-in">
+                <h5 class="highlight">Expertise</h5>
+                <div class="d-flex flex-wrap">
+                    {% for tag in expert.expertise.all %}
+                        <span class="badge bg-secondary me-2 mb-2">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="expert-section fade-in">
+                <h5 class="highlight">Contact</h5>
+                <p>Email: <a href="mailto:{{ expert.email }}">{{ expert.email }}</a></p><br>
+                Other Contacts: {{ expert.other_contacts|safe }}
+            </div>
+        </div>
+
+        <!-- Right column: Image + Connect button -->
+        <div class="image-column fade-in">
+            <div class="expert-section text-center">
+                <img src="{{ expert.profile.url }}" alt="{{ expert.name }}" class="expert-img">
+            </div>
+
+            {% if expert.user %}
+                <a href="{% url 'connect_to_expert' expert.id %}" class="connect-btn">Connect</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

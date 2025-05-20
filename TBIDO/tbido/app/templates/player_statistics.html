@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<style>
+    .player-statistics-table {
+        width: 100%;
+        border-collapse: collapse; /* Ensures borders collapse into a single border */
+    }
+
+    .player-statistics-table th,
+    .player-statistics-table td {
+        border: 1px solid #ddd; /* Adds a border around each cell */
+        padding: 10px; /* Adds padding inside each cell */
+        text-align: left;
+    }
+
+    .player-statistics-table th {
+        background-color: #f2f2f2; /* Adds a background color to headers */
+        color: black;
+    }
+
+    .player-statistics-table img {
+        width: 100px; /* Adjust the width as needed */
+        height: auto; /* Maintain aspect ratio */
+        margin-right: 5px;
+    }
+
+    .player-statistics-table p {
+        margin: 0;
+    }
+
+    /* Hover effect for cells */
+    .player-statistics-table td:hover {
+        background-color: #f5f5f5; /* Light grey background on hover */
+    }
+    .player-statistics-modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4); /* Semi-transparent black background */
+    }
+
+    .player-statistics-modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* Center the modal vertically and horizontally */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Adjust width as needed */
+        max-width: 600px; /* Ensure the modal doesn't get too wide */
+        position: relative; /* Positioning context for the close button */
+    }
+
+    .close-modal {
+        color: #aaa;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close-modal:hover,
+    .close-modal:focus {
+        color: black;
+        text-decoration: none;
+    }
+
+    .player-statistics-card {
+        text-align: center;
+    }
+
+    .player-logo {
+        width: 100px;
+        height: auto;
+        margin-bottom: 20px; /* Add some space below the logo */
+    }
+
+    .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .stats-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+        border-radius: 10px; /* Round the corners */
+    }
+
+    .stats-table tr:nth-child(even) {
+        background-color: #f2f2f2; /* Alternate row colors */
+    }
+</style>
+<div class="container">
+    <h2>{{ current_season.title }}</h2>
+    <table class="table player-statistics-table">
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>Team</th>
+                <th>Vs. Team</th>
+                <th>Points</th>
+                <th>Field Goals</th>
+                <th>Free Throws</th>
+                <th>Assists</th>
+                <th>Rebounds</th>
+                <th>Steals</th>
+                <th>Blocks</th>
+                <th>Turnovers</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in stats %}
+            <tr>
+                <td>
+                    <img src="{{ stat.player_picture.url }}" alt="{{ stat.first_name }} {{ stat.last_name }}">
+                    <p>{{ stat.first_name }} {{ stat.last_name }}</p>
+                </td>
+                <td>
+                    <img src="{{ stat.team_picture.url }}" alt="Team Logo">
+                    <p>{{ stat.team_name }}</p>
+                </td>
+                <td>{{ stat.vs_team }}</td>
+                <td>{{ stat.points }}</td>
+                <td>{{ stat.field_goals }}</td>
+                <td>{{ stat.free_throws }}</td>
+                <td>{{ stat.assists }}</td>
+                <td>{{ stat.rebounds }}</td>
+                <td>{{ stat.steals }}</td>
+                <td>{{ stat.blocks }}</td>
+                <td>{{ stat.turnovers }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Player Statistics Modal -->
+<div id="playerStatisticsModal" class="player-statistics-modal">
+    <div class="player-statistics-modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="player-statistics-card">
+            <img src="" alt="" class="player-logo">
+            <h2 class="player-name"></h2>
+            <p class="player-team"></p>
+            <p class="vs-team"></p>
+            <table class="stats-table">
+                <tr>
+                    <td>Points</td>
+                    <td class="player-points"></td>
+                </tr>
+                <tr>
+                    <td>Field Goals</td>
+                    <td class="field-goals"></td>
+                </tr>
+                <tr>
+                    <td>Free Throws</td>
+                    <td class="free-throws"></td>
+                </tr>
+                <tr>
+                    <td>Assists</td>
+                    <td class="assists"></td>
+                </tr>
+                <tr>
+                    <td>Rebounds</td>
+                    <td class="rebounds"></td>
+                </tr>
+                <tr>
+                    <td>Steals</td>
+                    <td class="steals"></td>
+                </tr>
+                <tr>
+                    <td>Blocks</td>
+                    <td class="blocks"></td>
+                </tr>
+                <tr>
+                    <td>Turnovers</td>
+                    <td class="turnovers"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById("playerStatisticsModal");
+        var span = document.getElementsByClassName("close-modal")[0];
+        var rows = document.querySelectorAll('.player-statistics-table tbody tr');
+
+        rows.forEach(function(row) {
+            row.onclick = function() {
+                modal.style.display = "block";
+                var playerLogo = row.querySelector('.player-statistics-table img').src;
+                var playerName = row.querySelector('.player-statistics-table p').textContent;
+                var playerTeam = row.cells[1].querySelector('p').textContent;
+                var vsTeam = row.cells[2].textContent;
+                var points = row.cells[3].textContent;
+                var fieldGoals = row.cells[4].textContent;
+                var freeThrows = row.cells[5].textContent;
+                var assists = row.cells[6].textContent;
+                var rebounds = row.cells[7].textContent;
+                var steals = row.cells[8].textContent;
+                var blocks = row.cells[9].textContent;
+                var turnovers = row.cells[10].textContent;
+
+                document.querySelector('.player-logo').src = playerLogo;
+                document.querySelector('.player-name').textContent = playerName;
+                document.querySelector('.player-team').textContent = playerTeam;
+                document.querySelector('.vs-team').textContent = vsTeam;
+                document.querySelector('.player-points').textContent = points;
+                document.querySelector('.field-goals').textContent = fieldGoals;
+                document.querySelector('.free-throws').textContent = freeThrows;
+                document.querySelector('.assists').textContent = assists;
+                document.querySelector('.rebounds').textContent = rebounds;
+                document.querySelector('.steals').textContent = steals;
+                document.querySelector('.blocks').textContent = blocks;
+                document.querySelector('.turnovers').textContent = turnovers;
+            }
+        });
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2 class="highlight mb-4">Sessions</h2>
+
+<div class="d-flex flex-wrap">
+    <!-- LEFT: Dropdown Card -->
+    <div id="dropdownCard" class="p-4 rounded-4 shadow-sm dropdown-card me-4">
+        <!-- Step 1 Dropdown -->
+        <div id="typeDropdown" class="mb-4">
+            <label for="sessionType" class="form-label">Mentorship or Learning?</label>
+            <select class="form-select" id="sessionType">
+                <option selected disabled>Select type</option>
+                <option value="Mentorship">Mentorship</option>
+                <option value="Learning">Learning (Coming Soon)</option>
+            </select>
+        </div>
+
+        <!-- Step 2 Dropdown -->
+        <div id="kindDropdown" class="mb-4" style="display: none;">
+            <label for="sessionKind" class="form-label">Choose category</label>
+            <select class="form-select" id="sessionKind">
+                <option selected disabled>Select category</option>
+                <option value="Technology">Technology</option>
+                <option value="Business">Business</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- RIGHT: Sessions Container -->
+    <div id="sessionsContainer" class="row g-4 mt-1 flex-grow-1" style="display: none;">
+        {% for schedule in schedules %}
+        <div class="col-md-4">
+            <div class="card session-card p-3" data-bs-toggle="modal" data-bs-target="#modal{{ schedule.id }}">
+                <h5 class="highlight">{{ schedule.session_topic }}</h5>
+                <p class="mb-1"><strong>Date:</strong> {{ schedule.session_time|date:"Y-m-d H:i" }}</p>
+                <p class="mb-0"><strong>Mentor:</strong> {{ schedule.mentor_name }}</p>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modal{{ schedule.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 rounded-4">
+              <div class="modal-header border-0">
+                <h4 class="highlight modal-title">{{ schedule.session_topic }}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Type:</strong> {{ schedule.session_type }}</p>
+                <p><strong>Kind:</strong> {{ schedule.session_kind }}</p>
+                <p><strong>Date:</strong> {{ schedule.session_time|date:"Y-m-d H:i" }}</p>
+                <p><strong>Cohort:</strong> {{ schedule.cohort_name }}</p>
+                <p><strong>Mentor:</strong> {{ schedule.mentor_name }}</p>
+                <p><strong>Email:</strong> {{ schedule.mentor_email }}</p>
+              </div>
+              <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary mt-2" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .modal-content {
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        background: #fff;
+    }
+
+    .highlight {
+        font-weight: 700;
+        background: linear-gradient(to right, #74172d, #2a4378);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .session-card {
+        background: #f9f9f9;
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+
+    .session-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .dropdown-card {
+        background: #fff;
+        border: 1px solid #eee;
+        width: 300px;
+        transition: all 0.5s ease;
+    }
+
+    /* Magic slide transition */
+    .dropdown-card.slide-left {
+        transform: translateX(-20px);
+        opacity: 0.8;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Show container with fade + slide */
+    #sessionsContainer.show {
+        display: flex !important;
+        animation: fadeSlideIn 0.5s ease forwards;
+    }
+</style>
+
+<script>
+    const sessionTypeSelect = document.getElementById('sessionType');
+    const sessionKindSelect = document.getElementById('sessionKind');
+    const kindDropdown = document.getElementById('kindDropdown');
+    const sessionsContainer = document.getElementById('sessionsContainer');
+    const dropdownCard = document.getElementById('dropdownCard');
+
+    sessionTypeSelect.addEventListener('change', function() {
+        if (this.value === 'Mentorship') {
+            kindDropdown.style.display = 'block';
+            setTimeout(() => kindDropdown.classList.add('show'), 100);
+        } else {
+            kindDropdown.style.display = 'none';
+            sessionsContainer.style.display = 'none';
+        }
+    });
+
+    sessionKindSelect.addEventListener('change', function() {
+        const type = sessionTypeSelect.value;
+        const kind = this.value;
+
+        // Slide left effect
+        dropdownCard.classList.add('slide-left');
+
+        // Show sessions container
+        sessionsContainer.style.display = 'flex';
+        setTimeout(() => sessionsContainer.classList.add('show'), 100);
+
+        // Actually filter sessions (URL param)
+        window.history.replaceState(null, '', `?session_type=${type}&session_kind=${kind}`);
+    });
+
+    // Show sessions after filtering (on page load with query params)
+    {% if selected_type and selected_kind %}
+    dropdownCard.classList.add('slide-left');
+    sessionsContainer.style.display = 'flex';
+    setTimeout(() => sessionsContainer.classList.add('show'), 100);
+    {% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4">
+
+    <!-- Spotlight Top Performers -->
+    {% if top_performers %}
+    <h3 class="mb-3 text-center">🌟 Top Performers</h3>
+    <div id="podium-container" class="d-flex justify-content-center align-items-end mb-5 gap-3 flex-wrap">
+
+        {% for performer in top_performers %}
+        {% if performer.ranking == 1 %}
+        <div class="podium-card rank-1 transition-in">
+            <div class="card text-white bg-warning shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ performer.progress_tracking.cohort_name }}</h5>
+                    <p class="card-text"><strong>🥇 Rank:</strong> {{ performer.ranking }}</p>
+                    <p class="card-text"><strong>Progress:</strong> {{ performer.progress_tracking.progress_percentage }}%</p>
+                </div>
+            </div>
+        </div>
+        {% elif performer.ranking == 2 %}
+        <div class="podium-card rank-2 transition-in">
+            <div class="card text-white bg-secondary shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ performer.progress_tracking.cohort_name }}</h5>
+                    <p class="card-text"><strong>🥈 Rank:</strong> {{ performer.ranking }}</p>
+                    <p class="card-text"><strong>Progress:</strong> {{ performer.progress_tracking.progress_percentage }}%</p>
+                </div>
+            </div>
+        </div>
+        {% elif performer.ranking == 3 %}
+        <div class="podium-card rank-3 transition-in">
+            <div class="card text-white bg-warning bg-opacity-75 shadow-sm" style="background-color: #cd7f32 !important;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ performer.progress_tracking.cohort_name }}</h5>
+                    <p class="card-text"><strong>🥉 Rank:</strong> {{ performer.ranking }}</p>
+                    <p class="card-text"><strong>Progress:</strong> {{ performer.progress_tracking.progress_percentage }}%</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+    </div>
+    {% endif %}
+
+    <!-- General Progress Tracking -->
+    <h4 class="mb-3">📈 Cohort Progress Tracking - {{ current_season.name }}</h4>
+    <div class="row">
+        {% for cohort in progress %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+
+                {% if cohort.picture %}
+                <div class="card-img-top position-relative" style="height: 150px; background-size: cover; background-position: center; background-image: url('{{ cohort.picture.url }}');">
+                    <div class="position-absolute bottom-0 start-0 w-100 p-2 bg-dark bg-opacity-50">
+                        <h5 class="text-white text-shadow m-0">{{ cohort.cohort_name }}</h5>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="m-0">{{ cohort.cohort_name }}</h5>
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Learning Sessions Attended:</strong> {{ cohort.learning_sessions_attended }}</li>
+                        <li class="list-group-item"><strong>Mentoring Sessions Completed:</strong> {{ cohort.mentoring_sessions_completed }}</li>
+                        <li class="list-group-item"><strong>Requirements Submitted:</strong> {{ cohort.submitted_requirements }}</li>
+                        <li class="list-group-item"><strong>Challenges Faced:</strong> {{ cohort.challenges_faced }}</li>
+                        <li class="list-group-item"><strong>Progress:</strong> {{ cohort.progress_percentage }}%</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<style>
+.text-shadow {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+/* Podium layout */
+#podium-container {
+    height: 300px;
+    overflow: hidden;
+}
+
+.podium-card {
+    transition: transform 1s ease, opacity 1s ease;
+    opacity: 0;
+    transform: translateY(100px);
+    width: 200px;
+}
+
+.podium-card.rank-1 {
+    order: 2;
+    height: 220px;
+}
+
+.podium-card.rank-2 {
+    order: 1;
+    height: 180px;
+}
+
+.podium-card.rank-3 {
+    order: 3;
+    height: 160px;
+}
+
+.podium-card.reveal {
+    transform: translateY(0);
+    opacity: 1;
+}
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.podium-card');
+        setTimeout(() => {
+            cards.forEach((card, i) => {
+                setTimeout(() => card.classList.add('reveal'), i * 150);  // stagger effect
+            });
+        }, 300); // slight delay after load
+    });
+</script>
+{% endblock %}

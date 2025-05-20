@@ -1,0 +1,145 @@
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; padding: 20px; color: #333;">
+    <div style="
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: 4px solid;
+        border-image-slice: 1;
+        border-width: 4px;
+        border-image-source: linear-gradient(to right, #74172d, #2a4378);
+    ">
+
+        <!-- Header with Gradient -->
+        <div style="
+            background: linear-gradient(to right, #74172d, #2a4378);
+            padding: 12px 20px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 20px;
+        ">
+            <h2 style="margin: 0; font-size: 20px; color: white; font-weight: bold;">
+                New Inquiry Received
+            </h2>
+        </div>
+
+        <!-- Introductory Text -->
+        <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+            Someone is interested and wants to inquire about your Cohort, here are their details, reasons for inquiry, and supporting documents:
+        </p>
+
+        <!-- Field Container with Gradient Header -->
+        <div style="
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(to right, #74172d, #2a4378);
+            border-radius: 10px;
+            background-color: #fafafa;
+        ">
+            <p class="highlight" style="margin: 0 0 8px; font-size: 14px; font-weight: bold;">
+                First Name
+            </p>
+            <div style="padding: 10px; border: 2px solid #74172d; border-radius: 8px; background-color: #fff; font-size: 16px; color: #333;">
+                {{ inquiry.first_name }}
+            </div>
+        </div>
+
+        <div style="
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(to right, #74172d, #2a4378);
+            border-radius: 10px;
+            background-color: #fafafa;
+        ">
+            <p class="highlight" style="margin: 0 0 8px; font-size: 14px; font-weight: bold;">
+                Last Name
+            </p>
+            <div style="padding: 10px; border: 2px solid #74172d; border-radius: 8px; background-color: #fff; font-size: 16px; color: #333;">
+                {{ inquiry.last_name }}
+            </div>
+        </div>
+
+        <div style="
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(to right, #74172d, #2a4378);
+            border-radius: 10px;
+            background-color: #fafafa;
+        ">
+            <p class="highlight" style="margin: 0 0 8px; font-size: 14px; font-weight: bold;">
+                Reason for Inquiry
+            </p>
+            <div style="padding: 10px; border: 2px solid #74172d; border-radius: 8px; background-color: #fff; font-size: 16px; color: #333;">
+                {{ inquiry.reason }}
+            </div>
+        </div>
+
+        <div style="
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(to right, #74172d, #2a4378);
+            border-radius: 10px;
+            background-color: #fafafa;
+        ">
+            <p class="highlight" style="margin: 0 0 8px; font-size: 14px; font-weight: bold;">
+                Strengths
+            </p>
+            <div style="padding: 10px; border: 2px solid #74172d; border-radius: 8px; background-color: #fff; font-size: 16px; color: #333;">
+                {{ inquiry.strengths }}
+            </div>
+        </div>
+
+        <div style="
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(to right, #74172d, #2a4378);
+            border-radius: 10px;
+            background-color: #fafafa;
+        ">
+            <p class="highlight" style="margin: 0 0 8px; font-size: 14px; font-weight: bold;">
+                Weaknesses
+            </p>
+            <div style="padding: 10px; border: 2px solid #74172d; border-radius: 8px; background-color: #fff; font-size: 16px; color: #333;">
+                {{ inquiry.weaknesses }}
+            </div>
+        </div>
+
+        <div style="
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(to right, #74172d, #2a4378);
+            border-radius: 10px;
+            background-color: #fafafa;
+        ">
+            <p class="highlight" style="margin: 0 0 8px; font-size: 14px; font-weight: bold;">
+                Field of Expertise
+            </p>
+            <div style="padding: 10px; border: 2px solid #74172d; border-radius: 8px; background-color: #fff; font-size: 16px; color: #333;">
+                {{ inquiry.field_of_expertise }}
+            </div>
+        </div>
+
+        <!-- Supporting Documents Note -->
+        <p style="margin-top: 40px; font-size: 16px; font-weight: bold; color: #333;">
+            Supporting documents are attached to this email.
+        </p>
+
+        <p style="margin-top: 40px; font-size: 14px; color: #888;">
+            Thanks for using <strong>TBIDO Pylon Cohorts</strong>!
+        </p>
+    </div>
+</body>

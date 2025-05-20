@@ -1,0 +1,649 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Include jQuery and Bootstrap JavaScript -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<style>
+/* Your existing CSS styles */
+    .event-title {
+        font-size: 14px;
+        white-space: normal;
+    }
+    .main-content {
+        margin-top: 70px;
+        padding: 20px;
+    }
+
+    .main-content-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-top: 70px;
+    }
+
+    .spotlight-jumbotron {
+        background-size: cover;
+        background-position: center;
+        height: 400px;
+    }
+
+    .mentoring-results-container {
+        perspective: 1000px;
+        position: static;
+        height: 200px;
+        width: 45%;
+        margin: 0 auto;
+        margin-bottom: 30px;
+    }
+
+    .mentoring-result {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        transition: transform 1s;
+        transform-style: preserve-3d;
+    }
+
+    .mentoring-result.active {
+        transform: rotateY(0deg) translateZ(0px);
+    }
+
+    .card {
+        margin: 0 auto;
+        margin-bottom: 20px;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+    }
+
+    .row {
+        margin-bottom: 20px;
+    }
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+    .card-header {
+        text-align: center;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card-footer {
+        text-align: center;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .header,.footer {
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+        font-weight: bold;
+        background-color: #b81b18;
+        color: white;
+    }
+
+    .content {
+        width: 100%;
+        text-align: center;
+        padding: 20px 0;
+    }
+
+    .progress-tracking-table tbody tr.active {
+        background-color: #f8f9fa;
+    }
+
+    /* Media query for mobile view */
+    @media screen and (max-width: 768px) {
+        .mentoring-results-container {
+            position: relative;
+            z-index: 1;
+            perspective: 1000px;
+            height: 200px;
+            width: 90%;
+            margin: 0 auto;
+            margin-bottom: 30px;
+        }
+        .mentoring-result {
+            width: 100%;
+            height: auto;
+            transform: none;
+        }
+        .spotlight-jumbotron {
+            height: auto;
+            padding: 20px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .other-posts.card {
+            width: 100%;
+            height: auto;
+            flex-direction: column;
+        }
+
+        .other-posts.card-body {
+            flex-direction: column;
+        }
+
+        .other-posts.card-body > div {
+            margin-bottom: 1rem;
+        }
+
+        .other-posts.card-footer {
+            margin-top: auto;
+        }
+    }
+    .main-content-container {
+        flex-direction: column;
+    }
+
+
+    .partner-logos-container {
+        overflow: hidden;
+        width: 100%;
+        margin: 1rem 0; /* closer spacing */
+    }
+
+    .partner-logos-wrapper {
+        display: flex;
+        white-space: nowrap;
+        will-change: transform;
+        animation: scrollLogos 20s linear infinite;
+    }
+
+    @keyframes scrollLogos {
+        0% {
+            transform: translateX(0%);
+        }
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+
+    .partner-logo {
+        display: inline-block;
+        margin: 0 2rem;
+    }
+
+    .partners-title {
+        font-size: 2.5rem;
+        font-weight: 400;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #1a1a1a;
+    }
+
+    .partners-title .highlight {
+        font-weight: 700;
+        background: linear-gradient(to right, #74172d, #2a4378); /* similar to the image colors */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .partner-logo img {
+        height: 120px; /* bigger logos */
+        width: auto;
+    }
+
+    /* Continuous scroll animation */
+    .spotlight-card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .spotlight-img {
+        height: 450px;
+        object-fit: cover;
+        width: 100%;
+        border-bottom: 4px solid #701127;
+    }
+
+    .post-thumbnail-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: none;
+    }
+
+    .post-thumbnail-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .post-thumbnail-img {
+        height: 200px;
+        object-fit: cover;
+        border-radius: 6px 6px 0 0;
+    }
+    .border-gradient {
+        border: 3px solid;
+        border-image: linear-gradient(to right, #701127, #2a4378);
+        border-image-slice: 1;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .pop-out-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 15px;
+        background-color: white;
+    }
+
+    .pop-out-hover:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+    .program-image {
+        max-height: 120px;
+        width: auto;
+        border-radius: 10px;
+        object-fit: contain;
+        margin: 0 auto;
+        display: block;
+    }
+
+    .program-card {
+        background-color: white;
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .pop-out-hover:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .border-gradient {
+        border: 2px solid;
+        border-image: linear-gradient(to right, #701127, #2a4378);
+        border-image-slice: 1;
+    }
+
+    /* Highlighted text effect */
+    .highlight {
+        background: linear-gradient(to right, #701127, #2a4378);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Container */
+    .people-container {
+        background-color: white;
+        border-radius: 25px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid;
+        border-image: linear-gradient(to right, #701127, #2a4378);
+        border-image-slice: 1;
+    }
+
+    /* Profile Cards */
+    .profile-card {
+        background-color: #f9f9f9;
+        border-radius: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Hover effect for both container and profile cards */
+    .pop-out-hover:hover {
+        transform: translateY(-5px) scale(1.03);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('event_calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: [
+                {% for event_schedule in event_schedules %}
+                {
+                    "title": "{{ event_schedule.event_name }}",
+                    "start": "{{ event_schedule.event_time_start_iso }}",
+                    "end": "{{ event_schedule.event_time_end_iso }}"
+                },
+                {% endfor %}
+            ],
+            eventContent: function(arg) {
+                var title = arg.event.title;
+                return {
+                    html: '<div class="event-title">' + title + '</div>',
+                    classes: 'event-custom-class'
+                };
+            }
+        });
+
+        calendar.render();
+    });
+
+    $(document).ready(function() {
+        var progressTracking = $('.progress-tracking-table tbody tr');
+        var currentIndex = 0;
+
+        function cycleProgressTracking() {
+            progressTracking.removeClass('active');
+            currentIndex = (currentIndex + 1) % progressTracking.length;
+            progressTracking.eq(currentIndex).addClass('active');
+            progressTracking.not('.active').hide();
+            progressTracking.eq(currentIndex).show();
+        }
+
+        setInterval(cycleProgressTracking, 5000);
+
+        $('.progress-tracking-table tbody tr').click(function() {
+            currentIndex = $(this).index();
+            cycleProgressTracking();
+        });
+
+        progressTracking.not(':first').hide();
+
+    });
+</script>
+
+<div class="container main-content-container">
+
+    <div class="text-center fade-in-on-scroll mb-4">
+        <h3 class="fw-bold">Application for Cohort 1 is now officially <span class="highlight">CLOSED</span></h3>
+        <p class="fs-5">Our call for incubatees for Cohort 2 will start in April 2025</p>
+    </div>
+    
+    <div class="fade-in-on-scroll mb-5 d-flex justify-content-center">
+        <div class="hover-image-card shadow-lg" style="width: 90%; max-width: 900px;">
+            <img src="{{ misc.0.picture.url }}" class="img-fluid rounded popup-hover-img" alt="Cohort Announcement">
+        </div>
+    </div>
+
+    <h2 class="partners-title text-center fade-in-on-scroll">Our <span class="highlight">Partners</span></h2>
+    <div class="partner-logos-container fade-in-on-scroll">
+        <div class="partner-logos-wrapper">
+            {% for logo in partner_logos %}
+            <div class="partner-logo">
+                <img src="{{ logo.image.url }}" alt="Partner Logo">
+            </div>
+            {% endfor %}
+            {% for logo in partner_logos %} {# duplicated for infinite scroll illusion #}
+            <div class="partner-logo">
+                <img src="{{ logo.image.url }}" alt="Partner Logo">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="fade-in-on-scroll mb-5">
+        <div class="card shadow-lg border-0 spotlight-card">
+            <img src="{{ random_post.related_picture.url }}" class="card-img-top" alt="{{ post.title }}" style="width: 100%; height: auto;">
+            <div class="card-body">
+                <h2 class="card-title fw-bold">{{ random_post.title }}</h2>
+                <p class="text-muted">{{ random_post.tag.name }}</p>
+                <a href="{% url 'post_detail' random_post.id %}" class="btn btn-outline-danger btn-sm">View</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Other Posts -->
+    <div class="row other-posts fade-in-on-scroll">
+        {% for post in other_posts %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm post-thumbnail-card">
+                <img src="{{ post.related_picture.url }}" class="card-img-top post-thumbnail-img" alt="{{ post.title }}">
+                <div class="card-body">
+                    <h6 class="card-title fw-semibold">{{ post.title }}</h6>
+                    <p class="text-muted small">{{ post.subtitle }}</p>
+                    <a href="{% url 'post_detail' post.id %}" class="btn btn-outline-danger btn-sm">View</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-5 fade-in-on-scroll">
+        <h2 class="partners-title">Banner <span class="highlight">Program</span></h2>
+        <h5 class="text-muted">Supply Chain Engineering and Logistics Technologies</h5>
+    </div>
+    
+    <div class="row mt-4 mb-5 gx-4 justify-content-center fade-in-on-scroll">
+        <!-- Container 1 -->
+        <div class="col-md-3 mb-4">
+            <div class="program-card shadow pop-out-hover border-gradient text-center p-3">
+                <img src="{{ misc.1.picture.url }}" class="program-image mb-3" alt="Services">
+                <h6 class="fw-bold">Services for Operational Efficiency Startups</h6>
+                <p class="small">PYLON TBI offers customized programs for startups aiming to enhance operational efficiency. Services include access to advanced process optimization tools, automation technologies, and data analytics platforms.</p>
+                <p class="small">Additionally, we provide mentorship from industry experts and opportunities for pilot projects to test and refine solutions in real-world scenarios.</p>
+            </div>
+        </div>
+    
+        <!-- Container 2 -->
+        <div class="col-md-3 mb-4">
+            <div class="program-card shadow pop-out-hover border-gradient text-center p-3">
+                <img src="{{ misc.2.picture.url }}" class="program-image mb-3" alt="Safety and Experience">
+                <h6 class="fw-bold">Workplace Safety and Customer Experience</h6>
+                <p class="small">Startups focused on workplace safety and customer experience benefit from our comprehensive suite of incubation services. These include access to state-of-the-art safety technologies, training programs, and customer service platforms.</p>
+                <p class="small">We also offer workshops on regulatory compliance and best practices, alongside networking opportunities with key industry players to foster innovation and collaboration.</p>
+            </div>
+        </div>
+    
+        <!-- Container 3 -->
+        <div class="col-md-3 mb-4">
+            <div class="program-card shadow pop-out-hover border-gradient text-center p-3">
+                <img src="{{ misc.3.picture.url }}" class="program-image mb-3" alt="Sustainability">
+                <h6 class="fw-bold">Sustainable Warehousing and Logistics Distribution</h6>
+                <p class="small">Our center supports startups dedicated to sustainable warehousing and logistics distribution by providing access to eco-friendly technologies and materials, energy-efficient solutions, and green logistics strategies.</p>
+                <p class="small">Services include sustainability assessments, guidance on regulatory standards, and connections with partners and investors committed to environmental stewardship and sustainable practices.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="particle-section" class="position-relative my-5" style="height: 300px; background: #111;">
+        <div id="particles-js" style="position: absolute; width: 100%; height: 100%;"></div>
+        <h2 class="particle-text">Incubatees: Cohort 1</h2>
+    </div>
+
+
+
+
+    <div class="container fade-in-on-scroll mb-5">
+        <div class="about-card shadow pop-out-hover border-gradient text-center p-4">
+            <h1 class="fw-bold"><span class="highlight">About</span> Us</h1>
+            <p class="fs-5">
+                PYLON Hub fosters innovation and entrepreneurship by supporting technology-based startups and empowering students and faculty to optimize systems in business and logistics ecosystems.
+            </p>
+        </div>
+    </div>
+
+    <div class="container fade-in-on-scroll mb-5">
+        <div class="shadow pop-out-hover border-gradient p-4 people-container text-center rounded-4">
+            <h1 class="fw-bold">The people behind <span class="highlight">TBIDO</span></h1>
+            <p class="fs-5 mb-4">PYLON Hub fosters innovation and entrepreneurship by supporting technology-based startups and empowering students</p>
+    
+            <div class="row g-4 justify-content-center">
+                <!-- Profile 1 -->
+                <div class="col-6 col-md-3">
+                    <div class="profile-card pop-out-hover p-3 text-center rounded-4">
+                        <img src="{{ misc.4.picture.url }}" class="img-fluid rounded-4 mb-2" alt="Person 1">
+                        <div>
+                            <strong>Dr. Philip Ermita PIE, PDQM, ASEAN Eng.</strong><br>
+                            <small class="text-muted">TBIDO Director</small>
+                        </div>
+                    </div>
+                </div>
+                <!-- Repeat for the rest -->
+                <div class="col-6 col-md-3">
+                    <div class="profile-card pop-out-hover p-3 text-center rounded-4">
+                        <img src="{{ misc.5.picture.url }}" class="img-fluid rounded-4 mb-2" alt="Person 2">
+                        <div>
+                            <strong>Dr. Juancho D. Espineli</strong><br>
+                            <small class="text-muted">Chief, Technology Development Section</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="profile-card pop-out-hover p-3 text-center rounded-4">
+                        <img src="{{ misc.6.picture.url }}" class="img-fluid rounded-4 mb-2" alt="Person 3">
+                        <div>
+                            <strong>Mr. John Dee Gonos</strong><br>
+                            <small class="text-muted">TBI Manager</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="profile-card pop-out-hover p-3 text-center rounded-4">
+                        <img src="{{ misc.7.picture.url }}" class="img-fluid rounded-4 mb-2" alt="Person 4">
+                        <div>
+                            <strong>Mrs. Irma Gatcho</strong><br>
+                            <small class="text-muted">Administrative Staff</small>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Row 2 -->
+                <div class="col-6 col-md-3">
+                    <div class="profile-card pop-out-hover p-3 text-center rounded-4">
+                        <img src="{{ misc.8.picture.url }}" class="img-fluid rounded-4 mb-2" alt="Person 5">
+                        <div>
+                            <strong>Engr. Tristan Velardo</strong><br>
+                            <small class="text-muted">Project Technical Assistant</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="profile-card pop-out-hover p-3 text-center rounded-4">
+                        <img src="{{ misc.9.picture.url }}" class="img-fluid rounded-4 mb-2" alt="Person 6">
+                        <div>
+                            <strong>Engr. Ma. Lourdes Girado</strong><br>
+                            <small class="text-muted">Project Technical Assistant</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="profile-card pop-out-hover p-3 text-center rounded-4">
+                        <img src="{{ misc.10.picture.url }}" class="img-fluid rounded-4 mb-2" alt="Person 7">
+                        <div>
+                            <strong>Engr. John Froilan Lluz</strong><br>
+                            <small class="text-muted">Project Technical Assistant</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="profile-card pop-out-hover p-3 text-center rounded-4">
+                        <img src="{{ misc.11.picture.url }}" class="img-fluid rounded-4 mb-2" alt="Person 8">
+                        <div>
+                            <strong>Engr. Kurt Leinard Balbuena</strong><br>
+                            <small class="text-muted">University Researcher</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #particle-section {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+    }
+
+    .particle-text {
+        position: relative;
+        z-index: 10;
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        line-height: 300px; /* vertically center */
+        user-select: none;
+        pointer-events: none;
+        font-family: 'Arial Black', Arial, sans-serif;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px #fff;
+    }
+</style>
+
+<script>
+    /* particles.js config */
+    particlesJS('particles-js', {
+      "particles": {
+        "number": {
+          "value": 80,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"]
+        },
+        "shape": {
+          "type": "circle"
+        },
+        "opacity": {
+          "value": 0.7,
+          "random": true,
+          "anim": {
+            "enable": false
+          }
+        },
+        "size": {
+          "value": 3,
+          "random": true,
+          "anim": {
+            "enable": false
+          }
+        },
+        "line_linked": {
+          "enable": true,
+          "distance": 150,
+          "color": "#ffffff",
+          "opacity": 0.4,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 3,
+          "direction": "none",
+          "random": false,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "grab"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "push"
+          },
+          "resize": true
+        },
+        "modes": {
+          "grab": {
+            "distance": 180,
+            "line_linked": {
+              "opacity": 0.7
+            }
+          },
+          "push": {
+            "particles_nb": 4
+          }
+        }
+      },
+      "retina_detect": true
+    });
+</script>
+
+{% endblock %}

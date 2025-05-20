@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+{% load widget_tweaks %}
+
+<link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+<script src="{% static 'bootstrap.bundle.min.js' %}"></script>
+
+<style>
+    .card {
+        border-radius: 20px;
+        transition: transform 0.3s ease;
+        border: 2px solid transparent;
+    }
+    .card:hover {
+        transform: scale(1.05);
+        border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+    }
+    .highlight {
+        font-weight: 700;
+        background: linear-gradient(to right, #74172d, #2a4378);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .field-container {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid transparent;
+    }
+    .field-container:hover {
+        transform: scale(1.02);
+        border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .form-label {
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+    .email-card {
+        background: #ffffff;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 2px solid transparent;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .email-card:hover {
+        transform: scale(1.02);
+        border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .plus-btn {
+        background: linear-gradient(to right, #74172d, #2a4378);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        line-height: 20px;
+    }
+    .plus-btn:hover {
+        opacity: 0.8;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card p-4 shadow">
+        <h2 class="highlight text-center mb-4">Create a Cohort</h2>
+        <div class="mb-4 p-3 rounded-3 fade-container text-dark" style="background-color: #ffc107;">
+            <div class="fade-text">NOTE: You can only create one Cohort! After this, you will not be able to create anymore.</div>
+          </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <!-- General Info -->
+                <div class="col-md-6">
+                    <h4 class="highlight">General Information</h4>
+                    <div class="field-container">
+                        <label class="form-label highlight">Cohort Name</label>
+                        {{ form.cohort_name|add_class:"form-control" }}
+                    </div>
+                    <div class="field-container">
+                        <label class="form-label highlight">Cohort Logo</label>
+                        {{ form.cohort_logo|add_class:"form-control" }}
+                    </div>
+                    <div class="field-container">
+                        <label class="form-label highlight">Short Description</label>
+                        {{ form.short_description|add_class:"form-control" }}
+                    </div>
+                </div>
+
+                <!-- Members List -->
+                <div class="col-md-6">
+                    <h4 class="highlight">Members List</h4>
+                    <p class="text-muted mb-2">(You may only add up to 5 members. Hence, 5 email addresses only.)</p>
+
+                    <div id="emailFields">
+                        <div class="email-card">
+                            <label class="form-label highlight">Member 1 Email</label>
+                            {{ form.member1_email|add_class:"form-control" }}
+                        </div>
+                        <div class="email-card" style="display: none;">
+                            <label class="form-label highlight">Member 2 Email</label>
+                            {{ form.member2_email|add_class:"form-control" }}
+                        </div>
+                        <div class="email-card" style="display: none;">
+                            <label class="form-label highlight">Member 3 Email</label>
+                            {{ form.member3_email|add_class:"form-control" }}
+                        </div>
+                        <div class="email-card" style="display: none;">
+                            <label class="form-label highlight">Member 4 Email</label>
+                            {{ form.member4_email|add_class:"form-control" }}
+                        </div>
+                        <div class="email-card" style="display: none;">
+                            <label class="form-label highlight">Member 5 Email</label>
+                            {{ form.member5_email|add_class:"form-control" }}
+                        </div>
+                    </div>
+
+                    <button type="button" id="addEmailBtn" class="plus-btn mt-2">+</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-4">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    let currentEmails = 1;
+    document.getElementById('addEmailBtn').addEventListener('click', function() {
+        if (currentEmails < 5) {
+            currentEmails++;
+            let fields = document.querySelectorAll('#emailFields .email-card');
+            fields[currentEmails - 1].style.display = 'block';
+            if (currentEmails === 5) {
+                this.style.display = 'none'; // hide button when 5 shown
+            }
+        }
+    });
+</script>
+
+{% endblock %}

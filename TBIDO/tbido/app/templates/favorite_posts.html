@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Favorite Posts{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        {% for favorite in favorites %}
+        <div class="col-md-8 mb-4">
+            <div class="card shadow-lg border-dark">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>{{ favorite.post.title }}</strong></h5>
+                    <p class="card-text">{{ favorite.post.content|safe }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info" role="alert">
+            You haven't marked any posts as favorites yet.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

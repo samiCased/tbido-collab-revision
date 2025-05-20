@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+<script src="{% static 'bootstrap.bundle.min.js' %}"></script>
+
+<style>
+  .card {
+    border-radius: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+    border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+
+  .highlight {
+    font-weight: 700;
+    background: linear-gradient(to right, #74172d, #2a4378);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .cohort-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .cohort-card {
+    width: 300px;
+    height: 200px;
+    border-radius: 20px;
+    background-color: #fff;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+
+  .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
+
+  .overlay h5 {
+    color: white;
+    margin: 0;
+  }
+
+  .creator-text {
+    font-size: 0.9rem;
+    color: #ddd;
+  }
+</style>
+
+<div class="container mt-5">
+  <!-- Page Header -->
+  <div class="mb-4">
+    <h1 class="highlight">Cohorts</h1>
+  </div>
+
+  <!-- Two-column layout -->
+  <div class="row">
+    <!-- Left Side: Cohort Cards -->
+    <div class="col-md-9">
+      <div class="cohort-container">
+        {% for cohort in cohorts %}
+          <div class="card cohort-card shadow"
+               onclick="location.href='{% url 'cohort_view' cohort.id %}'"
+               style="background-image: url('{{ cohort.cohort_logo.url }}');">
+            <div class="overlay">
+              <h5>{{ cohort.cohort_name }}</h5>
+              <p class="creator-text">Created by: {{ cohort.cohort_creator.username }}</p>
+            </div>
+          </div>
+        {% empty %}
+          <p>No cohorts found. Create one!</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Right Side: Action Buttons -->
+    <div class="col-md-3">
+      <div class="card p-4 shadow mb-3">
+
+        {% if user_created_cohort %}
+          <button class="btn btn-block mb-3" disabled
+            style="
+              background: linear-gradient(to right, #c4a1a8, #a8b2cc); /* lighter gradient */
+              color: #ffffff;
+              border: none;
+              border-radius: 50px;
+              font-weight: 600;
+              padding: 10px 15px;
+              opacity: 0.7;
+              cursor: not-allowed;">
+            You've already created a cohort! You can only create one.
+          </button>
+        {% else %}
+          <a href="{% url 'create_cohort' %}" class="btn btn-primary btn-block mb-3">Create a Cohort</a>
+        {% endif %}
+
+        <a href="{% url 'join_cohort' %}" class="btn btn-success btn-block mb-3">Join with Invite Code</a>
+
+        <!-- New Discussion Forum Button -->
+        <a href="{% url 'cohort_message_board' %}"
+           class="btn btn-block mb-2"
+           style="
+             background: linear-gradient(to right, #74172d, #2a4378);
+             color: white;
+             border: none;
+             border-radius: 50px;
+             font-weight: 600;
+             padding: 10px 15px;
+             transition: transform 0.3s ease, box-shadow 0.3s ease;">
+          Join the Discussion with our Cohorts!
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

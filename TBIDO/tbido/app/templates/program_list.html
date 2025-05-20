@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+{% load widget_tweaks %}
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        .highlight {
+            font-weight: 700;
+            background: linear-gradient(to right, #74172d, #2a4378);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-container {
+            border: 2px solid;
+            border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+            border-radius: 20px;
+            padding: 20px;
+            transition: all 0.5s ease;
+            background: white;
+        }
+
+        .sub-container {
+            border-radius: 15px;
+            padding: 15px;
+            background: linear-gradient(to right, #e6b0b8, #a9b7e8);
+            margin-bottom: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sub-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+<div class="container mt-5">
+
+    <!-- Program Dropdown -->
+    <div id="dropdown-container" class="card-container fade-in mb-5">
+        <h4 class="highlight mb-3">What Program do you wish to view?</h4>
+        <select class="form-control" id="programDropdown">
+            <option value="">Select a Program</option>
+            {% for program in programs %}
+                <option value="{{ program.id }}" {% if program == selected_program %}selected{% endif %}>
+                    {{ program.title }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Program Details -->
+    {% if selected_program %}
+    <div id="details-container" class="fade-in">
+
+        <!-- Program Card -->
+        <div class="card-container mb-5">
+            <img src="{{ selected_program.banner.url }}" class="img-fluid rounded mb-3" alt="Banner">
+            <h2 class="highlight">{{ selected_program.title }}</h2>
+            <p>Type: {{ selected_program.program_type }}</p>
+            <p>Status: {{ selected_program.application_status }}</p>
+            <p>Application Deadline: {{ selected_program.application_deadline }}</p>
+
+            <div class="sub-container">
+                <h5 class="highlight">Short Description</h5>
+                <p>{{ selected_program.short_description }}</p>
+            </div>
+
+            <div class="sub-container">
+                <h5 class="highlight">Key Benefits</h5>
+                {{ selected_program.key_benefits|safe }}
+            </div>
+
+            <div class="sub-container">
+                <h5 class="highlight">Eligibility Criteria</h5>
+                {{ selected_program.eligibility_criteria|safe }}
+            </div>
+
+            <div class="sub-container">
+                <h5 class="highlight">Duration</h5>
+                <p>{{ selected_program.duration }}</p>
+            </div>
+
+            <div class="sub-container">
+                <h5 class="highlight">More Details</h5>
+                {{ selected_program.details|safe }}
+            </div>
+
+        </div>
+
+        <!-- Application Form -->
+        {% if show_apply_button %}
+            <div class="card-container fade-in p-4">
+                <h4 class="highlight">Apply / Register Now</h4>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% for field in application_form.visible_fields %}
+                        <div class="form-group mb-4 p-3" style="border: 2px solid; border-image: linear-gradient(45deg, #701127, #e63946) 1; border-radius: 12px;">
+                            <label class="highlight">{{ field.label }}</label>
+                            {% render_field field class="form-control" %}
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-primary btn-block mt-3">Submit Application</button>
+                </form>
+            </div>
+        {% elif applied %}
+            <div class="alert alert-success fade-in mt-4">
+                ✅ Your application has been submitted successfully!
+            </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    // Program dropdown onchange
+    $('#programDropdown').on('change', function () {
+        let programId = $(this).val();
+        if (programId) {
+            window.location.href = '?program=' + programId;
+        }
+    });
+
+    // Apply Now button toggles the form
+    $('#applyNowBtn').on('click', function () {
+        $('#applicationFormContainer').slideToggle();
+    });
+</script>
+
+{% endblock %}

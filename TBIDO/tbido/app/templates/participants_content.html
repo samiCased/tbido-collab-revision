@@ -1,0 +1,30 @@
+<!-- participants_content.html -->
+<div class="card">
+    <div class="card-header">
+        <h4>Session Participants</h4>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <h5 class="mb-2">Pending Approval</h5>
+            <ul class="list-group">
+                {% for request in pending_requests %}
+                    <li class="list-group-item">
+                        {{ request.player.firstName }} {{ request.player.lastName }}
+                        <small class="text-muted">Requested: {{ request.requestDate }}</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h5 class="mb-2">Approved Players</h5>
+            <ul class="list-group">
+                {% for request in approved_requests %}
+                    <li class="list-group-item">
+                        {{ request.pendingRequest.player.firstName }} {{ request.pendingRequest.player.lastName }}
+                        <small class="text-muted">Approved: {{ request.approvalDate }}</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

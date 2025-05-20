@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f9f9f9;
+    }
+    .highlight {
+        font-weight: 700;
+        background: linear-gradient(to right, #74172d, #2a4378);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .card-container {
+        border: 2px solid;
+        border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+        border-radius: 20px;
+        padding: 20px;
+        transition: all 0.5s ease;
+        background: linear-gradient(to right, #f5dfe2, #dce3f9);
+    }
+    .sub-container {
+        border-radius: 15px;
+        padding: 15px;
+        background: linear-gradient(to right, #e6b0b8, #a9b7e8);
+        margin-bottom: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+    .sub-container:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s forwards;
+    }
+    @keyframes fadeInUp {
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="container mt-5">
+
+    <!-- Event Dropdown -->
+    <div class="card-container fade-in mb-5">
+        <h4 class="highlight mb-3">Which Event do you wish to view?</h4>
+        <select class="form-control" id="eventDropdown">
+            <option value="">Select an Event</option>
+            {% for event in events %}
+                <option value="{{ event.id }}" {% if event == selected_event %}selected{% endif %}>
+                    {{ event.title }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    {% if selected_event %}
+    <div class="fade-in">
+
+        <!-- 🔷 Event Details -->
+        <div class="card-container mb-5">
+            <img src="{{ selected_event.banner.url }}" class="img-fluid rounded mb-3" alt="Banner">
+            <h2 class="highlight">{{ selected_event.title }}</h2>
+
+            <p><strong>Speaker:</strong> {{ selected_event.speaker_name }}</p>
+            <div class="sub-container">
+                <h5 class="highlight">Speaker Bio</h5>
+                <p>{{ selected_event.speaker_bio }}</p>
+            </div>
+
+            <p><strong>Date & Time:</strong> {{ selected_event.event_date }} at {{ selected_event.event_time }}</p>
+
+            <div class="sub-container">
+                <h5 class="highlight">Agenda</h5>
+                {{ selected_event.agenda|safe }}
+            </div>
+
+            <div class="sub-container">
+                <h5 class="highlight">Location</h5>
+                <p>{{ selected_event.location }}</p>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                {% if selected_event.spots_left > 0 and not applied %}
+                    <a href="#register-section" class="btn btn-primary">Register Now</a>
+                {% endif %}
+                <p class="mb-0">Spots Available: {{ selected_event.spots_left }}/{{ selected_event.capacity }}</p>
+            </div>
+
+            {% if applied %}
+            <div class="alert alert-success fade-in mt-4">
+                ✅ Your registration has been submitted successfully!
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 🔷 Registration Form -->
+        {% if selected_event.spots_left > 0 and not applied %}
+        <div id="register-section" class="card-container fade-in p-4">
+            <h4 class="highlight">Register Now</h4>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form.visible_fields %}
+                    <div class="form-group mb-4 p-3" style="border: 2px solid; border-image: linear-gradient(45deg, #701127, #2a4378) 1; border-radius: 12px;">
+                        <label class="highlight">{{ field.label }}</label>
+                        {% render_field field class="form-control" %}
+                        {% for error in field.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary btn-block mt-3">Submit Registration</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- 🔷 Past Events -->
+    <div class="card-container fade-in mt-5">
+        <h4 class="highlight">Past Events</h4>
+        {% for event in past_events %}
+            <div class="sub-container d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ event.title }}</strong> - {{ event.event_date }}
+                </div>
+                <div>
+                    {% if event.recording_link %}
+                        <a href="{{ event.recording_link }}" class="btn btn-sm btn-outline-primary">View Recording</a>
+                    {% endif %}
+                    {% if event.feedback_link %}
+                        <a href="{{ event.feedback_link }}" class="btn btn-sm btn-outline-secondary">Feedback</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No past events available.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    // Redirect on event dropdown change
+    document.getElementById('eventDropdown').addEventListener('change', function() {
+        var selectedEvent = this.value;
+        var url = selectedEvent ? '?event=' + selectedEvent : '';
+        window.location.href = window.location.pathname + url;
+    });
+</script>
+{% endblock %}

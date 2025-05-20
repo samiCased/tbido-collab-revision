@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Approved Players for {{ session.sessionMaterialCovered }}</h2>
+            <div class="row">
+                {% for request in approved_requests %}
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <img src="{{ request.user.IDPicture.url }}" class="card-img-top" alt="Profile Picture">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ request.user.firstName }} {{ request.user.lastName }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-md-12">
+                        <p>No players have been approved for this session yet.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

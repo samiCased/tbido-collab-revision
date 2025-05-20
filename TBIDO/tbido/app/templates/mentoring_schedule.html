@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/main.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js"></script>
+
+<style>
+    /* Highlight gradient text */
+    .highlight {
+        font-weight: 700;
+        background: linear-gradient(to right, #74172d, #2a4378);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .boundary-box {
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px;
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        padding: 20px;
+    }
+    
+    .boundary-box:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 25px rgba(116, 23, 45, 0.25);
+    }
+    
+    /* Sparkle effect */
+    .boundary-box::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        pointer-events: none;
+        background-image: radial-gradient(#ffffff 1px, transparent 1px);
+        background-size: 10px 10px;
+        opacity: 0;
+        animation: sparkle-fade 1s ease-in-out forwards;
+        z-index: 1;
+    }
+    
+    .boundary-box:hover::after {
+        animation: sparkle-move 1.5s linear infinite;
+        opacity: 0.4;
+    }
+    
+    @keyframes sparkle-move {
+        0% { background-position: 0 0; }
+        100% { background-position: 100px 100px; }
+    }
+    
+    @keyframes sparkle-fade {
+        0% { opacity: 0; }
+        100% { opacity: 0.4; }
+    }
+    
+
+    .header {
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 1.2em;
+    }
+
+    .upcoming-card {
+        text-align: center;
+        margin-top: 10px;
+        padding: 10px;
+    }
+
+    /* Styled table card */
+    .table-container {
+        background-color: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    table.table {
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 0;
+    }
+
+    table.table td, table.table th {
+        transition: background-color 0.2s ease;
+    }
+
+    table.table td:hover, table.table th:hover {
+        background-color: #f0f8ff;
+        cursor: pointer;
+    }
+</style>
+
+
+<div class="container">
+    <h2>{{ current_season.title }}</h2>
+
+    <!-- Upcoming Session Card -->
+    <div class="boundary-box">
+        <div class="header highlight"><b><h3>Upcoming Mentoring Session</h3></b></div>
+        <div class="upcoming-card">
+            {% if most_recent_schedule %}
+                <strong>Topic:</strong> {{ most_recent_schedule.session_topic }}<br>
+                <strong>Date:</strong> {{ most_recent_schedule.session_time|date:"M d, Y H:i" }}<br>
+                <strong>Cohort:</strong> {{ most_recent_schedule.cohort_name }}<br>
+                <strong>Mentor:</strong> {{ most_recent_schedule.mentor_name }}
+            {% else %}
+                <p>No upcoming sessions scheduled.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Mentoring Schedule Table -->
+    <h1 class="mb-4 bg-white rounded p-2 mt-4"><b>Mentoring Schedule</b></h1>
+
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Session Topic</th>
+                        <th>Cohort</th>
+                        <th>Mentor</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for schedule in schedules %}
+                    <tr>
+                        <td>{{ schedule.session_topic }}</td>
+                        <td>{{ schedule.cohort_name }}</td>
+                        <td>{{ schedule.mentor_name }}</td>
+                        <td>{{ schedule.session_time|date:"M d, Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <br>
+    <div id='calendar'></div>
+</div>
+
+<!-- Modern FullCalendar Setup -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        themeSystem: 'standard',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: [
+            {% for schedule in schedules %}
+            {
+                title: "{{ schedule.session_topic|escapejs }} ({{ schedule.cohort_name|escapejs }} w/ {{ schedule.mentor_name|escapejs }})",
+                start: "{{ schedule.session_time_iso }}",
+            },
+            {% endfor %}
+        ],
+        eventContent: function (arg) {
+            return {
+                html: '<div class="event-title">' + arg.event.title + '</div>'
+            };
+        },
+        height: "auto"
+    });
+
+    calendar.render();
+});
+</script>
+{% endblock %}

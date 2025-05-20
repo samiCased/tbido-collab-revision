@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.image-modal .close-modal {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    z-index: 1060;
+}
+
+.image-modal .close-modal:hover,
+.image-modal .close-modal:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.image-modal .modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.card-hover-effect {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.card-hover-effect:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(112, 17, 39, 0.4);
+    background: linear-gradient(145deg, #701127, #500d1c);
+    color: white;
+}
+
+.card-hover-effect .card-text,
+.card-hover-effect .card-title,
+.card-hover-effect .text-muted {
+    color: inherit;
+}
+
+</style>
+
+<div class="container">
+    <h2 class="my-4"><span class="highlight">Officer</span> Profiles</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+        {% for officer in officers %}
+        <div class="col">
+            <div class="card h-100 card-hover-effect">
+                <img src="{{ officer.pictureFullBody.url }}" class="card-img-top" alt="{{ officer.firstName }} {{ officer.lastName }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ officer.firstName }} {{ officer.lastName }}</h5>
+                    <p class="card-text">{{ officer.occupation }}</p>
+                    <p class="card-text"><strong>Company:</strong> {{ officer.companyName }}</p>
+                    <button class="btn btn-sm btn-outline-light mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#officer{{ officer.officerKey }}">
+                        Show more details
+                    </button>
+                    <div class="collapse mt-2" id="officer{{ officer.officerKey }}">
+                        <p class="card-text"><strong>Affiliation:</strong> {{ officer.affiliation }}</p>
+                        <p class="card-text"><strong>Age:</strong> {{ officer.age }}</p>
+                        <p class="card-text"><strong>Height:</strong> {{ officer.height }}</p>
+                        <p class="card-text"><strong>Salary Grade:</strong> {{ officer.salaryGrade }}</p>
+                        <p class="card-text"><strong>Address:</strong> {{ officer.address }}</p>
+                        <p class="card-text"><strong>Employee No.:</strong> {{ officer.employeeNumber }}</p>
+                        <p class="card-text"><strong>Rank:</strong> {{ officer.rank }}</p>
+                        <p class="card-text"><strong>TIN:</strong> {{ officer.tin }}</p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Officer</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="imageModal" class="image-modal">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="img01">
+    <div id="caption" class="text-center text-white mt-3"></div>
+</div>
+
+<script>
+document.querySelectorAll('.card-img-top').forEach(function(img) {
+    img.addEventListener('click', function() {
+        document.getElementById('imageModal').style.display = "block";
+        document.getElementById('img01').src = this.src;
+        document.getElementById('caption').innerText = this.alt;
+    });
+});
+
+document.querySelector('.close-modal').addEventListener('click', function() {
+    document.getElementById('imageModal').style.display = "none";
+});
+</script>
+{% endblock %}

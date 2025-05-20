@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<style>
+    /* Fix navbar turning white issue */
+    .navbar {
+        background-color: #74172d !important;
+    }
+
+    body.modal-open .navbar {
+        background-color: #74172d !important;
+    }
+
+    .forum-post {
+        border: 2px solid #74172d;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        background: #fff;
+    }
+    .forum-post:hover {
+        transform: scale(1.02);
+    }
+    .highlight {
+        font-weight: 700;
+        background: linear-gradient(to right, #74172d, #2a4378);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .create-post-container {
+        background: #f9f9f9;
+        border: 2px solid #74172d;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .create-post-btn {
+        background: linear-gradient(to right, #74172d, #2a4378);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 15px 25px;
+        font-size: 18px;
+        transition: transform 0.2s ease;
+    }
+    .create-post-btn:hover {
+        transform: scale(1.05);
+    }
+
+    .reply-container {
+        border: 2px solid #74172d;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 15px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease;
+        background: #fff;
+    }
+
+    .reply-container.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .pulsing {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(116, 23, 45, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(116, 23, 45, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(116, 23, 45, 0); }
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="highlight mb-4">Cohorts Message Board</h2>
+
+    <div class="row">
+        <!-- Left: Forum posts -->
+        <div class="col-md-9">
+            {% for post in posts %}
+            <div class="forum-post" data-toggle="modal" data-target="#postModal{{ post.id }}">
+                <h5><span class="highlight">{{ post.addressed_cohort.cohort_name }}</span> — {{ post.sender.username }}</h5>
+                <p>{{ post.message|truncatechars:100 }}</p>
+                <small>{{ post.created_at }}</small>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="postModal{{ post.id }}" tabindex="-1">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Post by {{ post.sender.username }}</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  </div>
+                  <div class="modal-body">
+                    <p><strong>Addressed to:</strong> <span class="highlight">{{ post.addressed_cohort.cohort_name }}</span></p>
+                    <p>{{ post.message }}</p>
+                    <hr>
+                    <h6>Replies:</h6>
+                    {% for reply in post.replies.all %}
+                        {% if reply.is_member_of_addressed_cohort %}
+                        <div class="reply-container pulsing">
+                            <strong class="highlight">{{ reply.responder.username }} (Cohort Member)</strong>: {{ reply.message }}
+                        </div>
+                        {% else %}
+                        <div class="reply-container">
+                            <strong>{{ reply.responder.username }}</strong>: {{ reply.message }}
+                        </div>
+                        {% endif %}
+                    {% empty %}
+                        <p>No replies yet.</p>
+                    {% endfor %}
+                    <hr>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <div class="form-group">
+                            <textarea name="reply_message" class="form-control" placeholder="Write a reply..." required></textarea>
+                        </div>
+                        <button type="submit" name="reply_post" class="btn btn-primary">Reply</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Right: Create post button -->
+        <div class="col-md-3">
+            <div class="create-post-container">
+                <button class="create-post-btn" data-toggle="modal" data-target="#createPostModal">+ Create Post</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Post Modal -->
+<div class="modal fade" id="createPostModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title">Create a Post</h5>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Address to Cohort</label>
+            <select name="addressed_cohort" class="form-control" required>
+              {% for cohort in cohorts %}
+              <option value="{{ cohort.id }}">{{ cohort.cohort_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea name="message" class="form-control" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" name="create_post" class="btn btn-success">Post</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Fade-in on scroll script -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Fade in replies on scroll
+    function revealReplies() {
+        var reveals = document.querySelectorAll(".reply-container");
+        for (var i = 0; i < reveals.length; i++) {
+            var windowHeight = window.innerHeight;
+            var elementTop = reveals[i].getBoundingClientRect().top;
+            var elementVisible = 50;
+
+            if (elementTop < windowHeight - elementVisible) {
+                reveals[i].classList.add("visible");
+            }
+        }
+    }
+
+    window.addEventListener("scroll", revealReplies);
+    window.addEventListener("load", revealReplies);
+</script>
+{% endblock %}

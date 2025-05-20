@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Videos{% endblock %}
+
+{% block content %}
+<style>
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+
+    .video-card {
+        width: 90%;
+        max-width: 400px;
+    }
+
+    .video-banner {
+        height: auto; /* Let image decide */
+    }
+
+    .video-banner img {
+        height: auto;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+    }
+
+    .video-title {
+        font-size: 0.95rem;
+        padding: 0 0.5rem;
+        word-break: break-word;
+    }
+
+    .play-icon {
+        font-size: 2rem;
+        padding: 0.8rem;
+    }
+
+    .modal-content {
+        width: 100%;
+        max-width: 100%;
+        aspect-ratio: 16 / 9;
+    }
+
+    #videoModal,
+    #youtubeModal {
+        padding: 0.5rem;
+    }
+}
+/* --- Layout & Animation --- */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease-out forwards;
+}
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.video-title {
+    font-size: 1rem;
+    color: #333;
+}
+
+
+/* --- Welcome Banner --- */
+.welcome-banner {
+    background: linear-gradient(to right, #701127, #2a4378);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 20px;
+    text-align: center;
+    margin: 2rem auto;
+    max-width: 800px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Video Card --- */
+.video-card {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 300px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 16px rgba(112, 17, 39, 0.2);
+    position: relative;
+}
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(112, 17, 39, 0.3);
+}
+
+/* --- Thumbnail Image --- */
+.video-banner {
+    position: relative;
+    height: 170px;
+    background-color: #000;
+}
+.video-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.video-title-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    background: linear-gradient(to right, #74172d, #2a4378);
+    color: white;
+}
+
+/* --- Play Button Icon --- */
+.play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    color: white;
+    background: linear-gradient(to right, #74172d, #2a4378);
+    padding: 1rem;
+    border-radius: 50%;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    opacity: 0.8;
+}
+.play-icon:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+}
+
+/* --- Modal Overlay --- */
+#videoModal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+#videoModal.active {
+    display: flex;
+}
+
+/* --- Modal Content with Responsive Video --- */
+.modal-content {
+    width: 100%;
+    max-width: 960px;
+    aspect-ratio: 16 / 9;
+    position: relative;
+}
+.modal-content video {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    object-fit: contain;
+}
+.close-modal {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+}
+
+/* --- YouTube Modal --- */
+#youtubeModal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+#youtubeModal.active {
+    display: flex;
+}
+#youtubeModal .modal-content {
+    width: 100%;
+    max-width: 960px;
+    aspect-ratio: 16 / 9;
+    position: relative;
+}
+#youtubeModal iframe {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+}
+</style>
+
+<!-- Welcome Banner -->
+<div class="welcome-banner fade-in">
+    <h2 class="mb-0">Welcome to our <span class="fw-bold">Digital Library</span></h2>
+</div>
+
+<!-- Video Grid -->
+<div class="container">
+    {% for videopost in videoposts %}
+    <div class="video-card fade-in" style="animation-delay: {{ forloop.counter0|add:"0.1"|floatformat:1 }}s;">
+        <div class="video-banner" onclick="{% if videopost.youtube_link %}openYoutubeModal('{{ videopost.youtube_link }}'){% else %}openModal('{{ videopost.video.url }}'){% endif %}">
+            <img src="{{ videopost.banner.url }}" alt="{{ videopost.title }}">
+            <a href="javascript:void(0);" class="play-icon">
+                <img src="{{ misc.17.picture.url }}" alt="Play">
+            </a>
+        </div>
+        <div class="video-title text-center fw-bold mt-2">{{ videopost.title }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Modal for local videos -->
+<div id="videoModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <video controls id="modalVideo">
+            <source id="modalVideoSource" src="" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+</div>
+
+<!-- Modal for YouTube videos -->
+<div id="youtubeModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeYoutubeModal()">&times;</span>
+        <iframe id="youtubeFrame" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    </div>
+</div>
+
+<!-- JS: Modal Logic -->
+<script>
+function openModal(videoUrl) {
+    const modal = document.getElementById('videoModal');
+    const video = document.getElementById('modalVideo');
+    const source = document.getElementById('modalVideoSource');
+    document.getElementById('youtubeModal').classList.remove('active');
+    source.src = videoUrl;
+    video.load();
+    modal.classList.add('active');
+}
+
+function closeModal() {
+    const modal = document.getElementById('videoModal');
+    const video = document.getElementById('modalVideo');
+    modal.classList.remove('active');
+    video.pause();
+}
+
+// YouTube modal
+function openYoutubeModal(link) {
+    const modal = document.getElementById('youtubeModal');
+    const iframe = document.getElementById('youtubeFrame');
+    document.getElementById('videoModal').classList.remove('active');
+    iframe.src = link.replace("watch?v=", "embed/") + "?autoplay=1";
+    modal.classList.add('active');
+}
+
+function closeYoutubeModal() {
+    const modal = document.getElementById('youtubeModal');
+    const iframe = document.getElementById('youtubeFrame');
+    modal.classList.remove('active');
+    iframe.src = '';
+}
+</script>
+{% endblock %}

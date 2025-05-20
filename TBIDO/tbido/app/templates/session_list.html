@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="text-center mb-4"><span class='highlight'>Startups</span> you are in:</h2>
+
+    <div class="row">
+      {% for session in user_sessions %}
+        <div class="col-md-4 mb-4">
+          <div class="card session-card" style="cursor: pointer;" onclick="window.location.href='{% url 'session_view' session.sessionKey %}'">
+            <div class="card-body">
+              <div class="card-img-top">
+                {% if session.banner %}
+                  <img src="{{ session.banner.url }}" class="img-fluid" alt="Session Banner">
+                {% else %}
+                  <img src="default-image.jpg" class="img-fluid" alt="No Banner">
+                {% endif %}
+              </div>
+              <h5 class="card-title mt-3">
+                <span class="highlight">{{ session.sessionMaterialCovered }}</span>
+              </h5>
+              <p class="card-text">Date: {{ session.sessionDateKey }} | Time: {{ session.sessionTimeKey }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <style>
+    .session-card {
+      border: 2px solid transparent;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .session-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      border-color: #74172d; /* Highlight gradient color */
+    }
+
+    .highlight {
+      font-weight: 700;
+      background: linear-gradient(to right, #74172d, #2a4378);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .card-img-top {
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .card-img-top img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.5s ease;
+    }
+
+    .session-card:hover .card-img-top img {
+      transform: scale(1.1);
+    }
+    @keyframes pop-up {
+        0% {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      .session-card {
+        animation: pop-up 0.5s ease-out;
+      }
+  </style>
+{% endblock %}

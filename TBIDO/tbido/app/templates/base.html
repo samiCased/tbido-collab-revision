@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TBIDO PYLON Cohorts</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        @media (max-width: 768px) {
+            html, body {
+                overflow-y: auto;
+                height: auto;
+            }
+
+            .container, .main-content-container {
+                height: auto;
+                min-height: 100vh;
+                overflow-x: hidden;
+            }
+
+            /* You can also fix paddings/margins if needed */
+            .main-content-container {
+                padding-bottom: 100px; /* Extra bottom space so user can scroll fully */
+            }
+        }
+
+        .navbar {
+            background-color: #701127 !important;
+            color: white !important;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .text-color-red {
+            color: #701127 !important;
+        }
+
+        .nav-color {
+            background-color: #701127 !important;
+            color: white !important;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Logo section styling */
+        .logo-section {
+            background-color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin-right: 1rem;
+        }
+
+        .navbar .nav-link {
+            color: white !important;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .navbar .nav-link:hover {
+            color: #cc9a00 !important;
+        }
+
+        .navbar .navbar-brand {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .navbar .navbar-toggler:hover {
+            color: #cc9a00 !important;
+        }
+
+        body {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        .fade-in-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .fade-in-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .highlight {
+            font-weight: 700;
+            background: linear-gradient(to right, #74172d, #2a4378); /* similar to the image colors */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(112, 17, 39, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(112, 17, 39, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(112, 17, 39, 0); }
+        }
+        .expert-card {
+            transition: all 0.3s ease-in-out;
+        }
+        .expert-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+    </style>
+    <style>
+  .navbar-nav.flex-nowrap {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .navbar-nav.flex-nowrap .nav-item {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 991.98px) {
+    .navbar-nav {
+      gap: 0.25rem;
+    }
+  }
+  /* Spinner rotation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Apply your gradient highlight colors to the spinner */
+.gradient-spinner {
+    border-top: 6px solid;
+    border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+}
+</style>
+<script>
+    // Phrases list
+    const phrases = [
+        "Starting something amazing...",
+        "Loading, please be patient!",
+        "As a Startup Founder, you can create startups for Registered Users to join!",
+        "Registered Users can join startups created by Startup Founders!",
+        "Don't forget to check out our informative Services page!",
+        "Click on your profile icon at the top right to access your profile page and more!",
+        "Have an amazing idea? Create a startup with us!",
+        "We'd love to help! Inquire with us here!",
+        "This application is powered by the TechDev sector, inquire about us in the services tab!"
+    ];
+
+    // As soon as DOM is parsed
+    document.addEventListener('DOMContentLoaded', function() {
+        const phraseElement = document.getElementById('loading-phrase');
+        const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+        phraseElement.textContent = randomPhrase;
+    });
+
+    // Hide loader only after page fully loads
+    window.addEventListener('load', function() {
+        const loader = document.getElementById('page-loader');
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 500); // hide after fade-out
+    });
+</script>
+
+</head>
+<body>
+    <!-- Page Loader Overlay -->
+    <div id="page-loader" style="
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* subtle shadow overlay */
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.5s ease;
+    ">
+
+        <!-- Custom Gradient Spinner -->
+        <div class="gradient-spinner" style="
+            width: 60px;
+            height: 60px;
+            border: 6px solid transparent;
+            border-top: 6px solid;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            background-clip: border-box;
+        "></div>
+
+        <!-- Loading Phrase -->
+        <p id="loading-phrase" style="
+            color: white;
+            margin-top: 20px;
+            text-align: center;
+            max-width: 80%;
+            font-size: 1rem;
+        "></p>
+
+    </div>
+
+    {% if request.user.is_authenticated and request.session.show_verification_overlay and request.user.member and not request.user.member.is_verified %}
+        <div id="verification-overlay" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="z-index: 1050; background-color: rgba(0, 0, 0, 0.8);">
+            <div class="bg-white text-center p-4 rounded shadow-lg" style="max-width: 400px;">
+                <h5 class="text-danger fw-bold mb-3">Email Verification Required</h5>
+                <p class="mb-3">We've sent a verification link to your email. Please access your gmail account in the same browser to verify.</p>
+                <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
+
+    {% elif request.user.is_authenticated and request.session.show_verification_overlay and request.user.officer and not request.user.officer.is_verified %}
+        <div id="verification-overlay" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="z-index: 1050; background-color: rgba(0, 0, 0, 0.8);">
+            <div class="bg-white text-center p-4 rounded shadow-lg" style="max-width: 400px;">
+                <h5 class="text-danger fw-bold mb-3">Email Verification Required</h5>
+                <p class="mb-3">We've sent a verification link to your email. Please access your gmail account in the same browser to verify.</p>
+                <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
+
+    {% elif request.user.is_authenticated and request.session.show_verification_overlay and request.user.guest and not request.user.guest.is_verified %}
+        <div id="verification-overlay" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="z-index: 1050; background-color: rgba(0, 0, 0, 0.8);">
+            <div class="bg-white text-center p-4 rounded shadow-lg" style="max-width: 400px;">
+                <h5 class="text-danger fw-bold mb-3">Email Verification Required</h5>
+                <p class="mb-3">We've sent a verification link to your email. Please access your gmail account in the same browser to verify.</p>
+                <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
+
+    {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fadeElements = document.querySelectorAll('.fade-in-on-scroll');
+
+            function handleScroll() {
+                fadeElements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    const windowHeight = window.innerHeight;
+                    if (rect.top <= windowHeight - 100) {
+                        el.classList.add('visible');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', handleScroll);
+            handleScroll(); // trigger on load in case already in view
+        });
+    </script>
+<div class="page-wrapper d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+
+            <div class="logo-section">
+                <a class="navbar-brand" href="{% url 'landing_page' %}">
+                    <img src="{{ logo.image.url }}" alt="TBIDO Pylon Cohorts Logo" style="height: 40px;">
+                </a>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+              <ul class="navbar-nav me-auto">  <!-- changed mr-auto to me-auto -->
+                {% if request.user.is_authenticated %}
+                    {% if not request.session.incomplete_registration %}
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'program_list' %}">PROGRAMS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'cohorts_page' %}">COHORTS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'sessions' %}">SESSIONS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'event_list' %}">EVENTS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'services_view' %}">SERVICES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'public_forum' %}">FORUM</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'videos' %}">DIGITAL LIBRARY</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'resource_list' %}">RESOURCES</a>
+                        </li>
+
+
+                    {% endif %}
+                {% endif %}
+              </ul>
+
+              <ul class="navbar-nav ms-auto">  <!-- keep ms-auto here -->
+                {% if not request.user.is_authenticated %}
+                  <li class="nav-item hide-if-no-consent">
+                    <a class="nav-link" href="{% url 'register' %}">SIGN UP</a>
+                  </li>
+                  <li class="nav-item hide-if-no-consent">
+                    <a class="nav-link" href="{% url 'login' %}">LOGIN</a>
+                  </li>
+                {% elif request.user.is_authenticated %}
+                        {% if request.session.incomplete_registration %}
+                        <!--<li class="nav-item">-->
+                        <!--    <a class="nav-link" href="{% url 'logout' %}">ABORT REGISTRATION</a>-->
+                        <!--</li>-->
+                        {% endif %}
+                {% endif %}
+
+                <li class="nav-item dropdown">
+                  {% if request.user.is_authenticated %}
+                    {% if user.member.IDPicture or user.officer.IDPicture or user.guest.IDPicture or not request.session.incomplete_registration %}
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          <img src="{{ profile.IDPicture.url }}" alt="Profile Picture" class="rounded-circle" style="width: 40px; height: 40px;">
+                        </a>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">ABORT REGISTRATION</a>
+                        </li>
+                    {% endif %}
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink" style="list-style-type: none;">
+                      <li><a class="dropdown-item" href="{% url 'profile' %}">MY PROFILE</a></li>
+                      <li><a class="dropdown-item" href="{% url 'session_list' %}">MY STARTUPS</a></li>
+                      <!--<li><a class="dropdown-item" href="{% url 'profiles' %}">OTHER PROFILES</a></li>-->
+                      <li><a class="dropdown-item" href="{% url 'home' %}">HOME</a></li>
+                      <li><a class="dropdown-item" href="{% url 'cohorts_page' %}">COHORTS</a></li>
+                      {% if request.user.officer %}
+                        <li><a class="dropdown-item" href="{% url 'create_session' %}"><span class="highlight">CREATE STARTUP</span></a></li>
+                      {% endif %}
+                      <li><a class="dropdown-item" href="{% url 'inbox' %}"><span class="highlight">INBOX</span> ✉️</a></li>
+                      <!--<li><a class="dropdown-item" href="{% url 'officer_profiles' %}">OFFICERS</a></li>-->
+                      <li><a class="dropdown-item" href="{% url 'logout' %}">LOGOUT</a></li>
+                    </ul>
+                  {% endif %}
+                </li>
+              </ul>
+
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        {% for message in messages %}
+        <div class="toast show bg-success text-white fade-in" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    {{ message }}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="flex-grow-1">
+        <div class="container py-3">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+    {% if user.is_authenticated %}
+        {% include 'helpdesk_chat.html' %}
+    {% endif %}
+
+    {% if request.session.incomplete_registration %}
+    {% if request.resolver_match.view_name != 'create_member' and request.resolver_match.view_name != 'create_guest' and request.resolver_match.view_name != 'create_officer' %}
+        <div id="continue-registration-btn" class="position-fixed bottom-0 start-0 m-4 opacity-0 translate-y-5" style="z-index: 1050; transition: all 0.5s ease;">
+            {% if request.session.incomplete_registration.type == "member" %}
+                <a href="{% url 'create_member' %}" class="btn btn-warning shadow">Continue your registration</a>
+            {% elif request.session.incomplete_registration.type == "guest" %}
+                <a href="{% url 'create_guest' %}" class="btn btn-warning shadow">Continue your registration</a>
+            {% elif request.session.incomplete_registration.type == "officer" %}
+                <a href="{% url 'create_officer' %}" class="btn btn-warning shadow">Continue your registration</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endif %}
+
+    <style>
+    .opacity-0 {
+      opacity: 0;
+    }
+    .translate-y-5 {
+      transform: translateY(20px);
+    }
+    .opacity-100 {
+      opacity: 1;
+    }
+    .translate-y-0 {
+      transform: translateY(0);
+    }
+    </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('continue-registration-btn');
+        if (btn) {
+            setTimeout(() => {
+                btn.classList.remove('opacity-0', 'translate-y-5');
+                btn.classList.add('opacity-100', 'translate-y-0');
+            }, 100); // short delay to trigger animation after page load
+        }
+    });
+    </script>
+
+
+    <footer>
+        <!-- Top Footer with Gradient & Particles -->
+        <div id="footer-particle-section" class="py-2 text-white" style="font-size: 0.85rem; min-height: 160px;">
+          <!-- Particles container behind the content -->
+          <div id="footer-particles-js"></div>
+
+          <div class="container">
+              <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-4 text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 120px;">
+                  <h6 class="text-uppercase mb-1">Contacts</h6>
+                  <p class="mb-0">Email: tbido@pup.edu.ph</p>
+                </div>
+
+                <!-- Middle Column (was Quick Links, now About Us) -->
+                <div class="col-md-4 text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 120px;">
+                  <h6 class="text-uppercase mb-1">About Us</h6>
+                  <p style="max-width: 260px; margin-bottom: 0;">We foster innovation & entrepreneurship through support for tech-based startups & student empowerment.</p>
+                </div>
+
+                <!-- Right Column (was About Us, now Quick Links) -->
+                <div class="col-md-4 text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 120px;">
+                  <h6 class="text-uppercase mb-1">Quick Links</h6>
+                  <ul class="list-unstyled mb-0">
+                    <li><a href="https://www.pup.edu.ph/" class="footer-link">PUP Official Website</a></li>
+                    {% if not user.is_authenticated %}
+                      <li><a href="{% url 'register' %}" class="footer-link hide-if-no-consent">Register Now!</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'videos' %}" class="footer-link">Digital Library</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+
+          <div class="text-center py-2 text-white" style="font-size: 0.8rem; position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+              Powered by TBIDO TechDev
+              {% if misc_12 %}
+                <img src="{{ misc_12.picture.url }}" alt="TechDev Logo" style="height: 30px; width: auto;">
+              {% endif %}
+            </div>
+      </footer>
+
+</div>
+    <style>
+  .highlight {
+    font-weight: 700;
+    background: linear-gradient(to right, #74172d, #2a4378);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #footer-particles-js {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  #footer-particle-section {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(to right, #74172d, #2a4378);
+  }
+  #footer-particle-section > .container {
+    position: relative;
+    z-index: 1;
+  }
+  .footer-link {
+    color: white;
+    text-decoration: none;
+  }
+  .footer-link:hover {
+    text-decoration: underline;
+  }
+
+  footer {
+    background-color: #701127;
+    color: white;
+    padding: 2rem 0;
+    font-family: 'Poppins', sans-serif;
+    }
+
+    .footer-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .footer-section:last-child {
+        margin-bottom: 0;
+    }
+
+     @media (max-width: 767.98px) {
+    #footer-particle-section .col-md-4 {
+      min-height: auto !important;
+      margin-bottom: 1rem; /* Add a small margin between stacked sections */
+    }
+    #footer-particle-section .col-md-4:last-child {
+      margin-bottom: 0; /* No margin under the last section */
+    }
+  }
+</style>
+<script>
+    particlesJS('footer-particles-js', {
+        "particles": {
+          "number": {
+            "value": 50,
+            "density": { "enable": true, "value_area": 700 }
+          },
+          "color": { "value": ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"] },
+          "shape": { "type": "circle" },
+          "opacity": { "value": 0.7, "random": true },
+          "size": { "value": 3, "random": true },
+          "line_linked": {
+            "enable": true,
+            "distance": 120,
+            "color": "#ffffff",
+            "opacity": 0.3,
+            "width": 1
+          },
+          "move": { "enable": true, "speed": 2, "out_mode": "out" }
+        },
+        "interactivity": {
+          "events": {
+            "onhover": { "enable": true, "mode": "grab" },
+            "onclick": { "enable": true, "mode": "push" }
+          },
+          "modes": {
+            "grab": { "distance": 150, "line_linked": { "opacity": 0.6 } },
+            "push": { "particles_nb": 4 }
+          }
+        },
+        "retina_detect": true
+      });
+</script>
+</body>
+</html>

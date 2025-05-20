@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  /* Copied from session_list and adjusted */
+
+  .session-card {
+    border: 2px solid transparent;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .session-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    border-color: #74172d; /* Highlight gradient color */
+  }
+
+  .highlight {
+    font-weight: 700;
+    background: linear-gradient(to right, #74172d, #2a4378);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .card-img-top {
+    height: 200px;
+    overflow: hidden;
+    border-radius: 15px 15px 0 0;
+    position: relative;
+  }
+
+  .card-img-top img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+    display: block;
+  }
+
+  .session-card:hover .card-img-top img {
+    transform: scale(1.1);
+  }
+
+  .card-body {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    margin-top: 1rem;
+    font-size: 1.25rem;
+  }
+
+  .btn-primary.w-100.mt-auto {
+    background-color: #701127;
+    border-color: #701127;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+    margin-top: 1rem;
+  }
+
+  .btn-primary.w-100.mt-auto:hover {
+    background-color: #cc9a00;
+    border-color: #cc9a00;
+  }
+
+  /* Pop-up animation */
+  @keyframes pop-up {
+    0% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .session-card {
+    animation: pop-up 0.5s ease-out;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .col-lg-3.col-md-4.col-sm-6 {
+      flex: 0 0 calc(50% - 20px);
+      max-width: calc(50% - 20px);
+    }
+
+    .card-title {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<div class="container-fluid home-background">
+  <div class="row">
+    <!-- Welcome Message -->
+    <div class="col-md-12 welcome-message">
+      <h2><span class="highlight">Welcome</span>, {{ profile.firstName }} {{ profile.lastName }}!</h2>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-12">
+      <h2>Startups</h2>
+      <div class="row">
+        {% for session in sessions %}
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card session-card" onclick="window.location.href='{% url 'session_view' session.sessionKey %}'" role="button" tabindex="0" onkeypress="if(event.key === 'Enter') window.location.href='{% url 'session_view' session.sessionKey %}'">
+              <div class="card-img-top">
+                {% if session.banner %}
+                  <img src="{{ session.banner.url }}" alt="Session Banner">
+                {% else %}
+                  <div style="background-color: #1a73e8; height: 100%; display: flex; align-items: center; justify-content: center;">
+                    <h5 class="highlight" style="padding: 0 1rem; text-align: center;">{{ session.sessionMaterialCovered }}</h5>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="card-body">
+                <h5 class="card-title highlight">{{ session.sessionMaterialCovered }}</h5>
+                <p class="card-text">Date: {{ session.sessionDateKey }} | Time: {{ session.sessionTimeKey }}</p>
+                {% if request.user.member %}
+                    <a href="{% url 'session_view' session.sessionKey %}" class="btn btn-primary w-100 mt-auto nav-color">View Startup</a>
+                {% elif request.user.guest %}
+                    <div class="alert alert-warning text-center">
+                        Guests cannot view or join startups.
+                    </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-md-12">
+            <p class="text-muted text-center py-4">No Startups available.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

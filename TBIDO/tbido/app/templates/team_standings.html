@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<style>
+    .team-standings-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.team-standings-table th,
+.team-standings-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.team-standings-table th {
+    background-color: #f2f2f2;
+    color: black;
+}
+
+/* Style for the team logo and name cell */
+.team-logo-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Style for hover effect */
+.team-standings-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Conditional styling for high values */
+.high-value {
+    color: green;
+}
+
+.low-value {
+    color: red;
+}
+.team-standing-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4); /* Semi-transparent black background */
+}
+
+.team-standing-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* Center the modal vertically and horizontally */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Adjust width as needed */
+    max-width: 600px; /* Ensure the modal doesn't get too wide */
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.team-standing-card {
+    text-align: center;
+}
+
+.team-logo {
+    width: 100px;
+    height: auto;
+}
+
+.team-statistics-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px; /* Add some space above the table */
+}
+
+.team-statistics-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.team-statistics-table tr:nth-child(even) {
+    background-color: #f2f2f2; /* Alternate row colors for better readability */
+}
+</style>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<div class="container">
+    <h2>{{ current_season.title }}</h2>
+    <table class="table team-standings-table">
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Points</th>
+                <th>Wins</th>
+                <th>Losses</th>
+                <th>Points Scored</th>
+                <th>Points Conceded</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for standing in standings %}
+            <tr>
+                <td class="team-logo-name">
+                    <img src="{{ standing.team_logo.url }}" alt="{{ standing.team_name }}" style="width: 50px; height: auto;">
+                    <p>{{ standing.team_name }}</p>
+                </td>
+                <td class="{% if standing.points > 50 %}high-value{% else %}low-value{% endif %}">{{ standing.points }}</td>
+                <td>{{ standing.wins }}</td>
+                <td>{{ standing.losses }}</td>
+                <td>{{ standing.points_scored }}</td>
+                <td>{{ standing.points_conceded }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="teamStandingModal" class="team-standing-modal">
+    <div class="team-standing-modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="team-standing-card">
+            <img src="" alt="" class="team-logo">
+            <h2 class="team-name"></h2>
+            <table class="team-statistics-table">
+                <tr>
+                    <td>Points:</td>
+                    <td class="team-points"></td>
+                </tr>
+                <tr>
+                    <td>Wins:</td>
+                    <td class="team-wins"></td>
+                </tr>
+                <tr>
+                    <td>Losses:</td>
+                    <td class="team-losses"></td>
+                </tr>
+                <tr>
+                    <td>Points Scored:</td>
+                    <td class="team-points-scored"></td>
+                </tr>
+                <tr>
+                    <td>Points Conceded:</td>
+                    <td class="team-points-conceded"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById("teamStandingModal");
+        var span = document.getElementsByClassName("close-modal")[0];
+        var rows = document.querySelectorAll('.team-standings-table tbody tr');
+
+        rows.forEach(function(row) {
+            row.onclick = function() {
+                modal.style.display = "block";
+                var teamLogo = row.querySelector('.team-logo-name img').src;
+                var teamName = row.querySelector('.team-logo-name p').textContent;
+                var points = row.querySelector('.high-value, .low-value').textContent;
+                var wins = row.cells[2].textContent;
+                var losses = row.cells[3].textContent;
+                var pointsScored = row.cells[4].textContent;
+                var pointsConceded = row.cells[5].textContent;
+
+                // Correctly set the textContent for each element
+                document.querySelector('.team-logo').src = teamLogo;
+                document.querySelector('.team-name').textContent = teamName;
+                document.querySelector('.team-points').textContent = "Points: " + points;
+                document.querySelector('.team-wins').textContent = "Wins: " + wins;
+                document.querySelector('.team-losses').textContent = "Losses: " + losses;
+                document.querySelector('.team-points-scored').textContent = "Points Scored: " + pointsScored;
+                document.querySelector('.team-points-conceded').textContent = "Points Conceded: " + pointsConceded;
+            }
+        });
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+    });
+</script>
+{% endblock %}

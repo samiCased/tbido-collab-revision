@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+{% load widget_tweaks %}
+
+<link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+<script src="{% static 'bootstrap.bundle.min.js' %}"></script>
+
+<style>
+.card {
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+    border: 2px solid transparent;
+}
+.card:hover {
+    transform: scale(1.05);
+    border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+}
+.highlight {
+    font-weight: 700;
+    background: linear-gradient(to right, #74172d, #2a4378);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.field-container {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid transparent;
+}
+.field-container:hover {
+    transform: scale(1.02);
+    border-image: linear-gradient(to right, #74172d, #2a4378) 1;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+form {
+    max-width: 600px;
+    margin: auto;
+}
+
+</style>
+
+<div class="container mt-5">
+    <div class="card p-4 shadow">
+        <h2 class="highlight text-center mb-4">Join a Cohort</h2>
+        <form method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="field-container">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field|add_class:"form-control" }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-success btn-block mt-3">Join Cohort</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

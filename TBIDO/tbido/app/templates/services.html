@@ -1,0 +1,588 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+{% load widget_tweaks %}
+
+<style>
+    .highlight {
+        font-weight: 700;
+        background: linear-gradient(to right, #74172d, #2a4378);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .service-card {
+        border: 2px solid transparent;
+        border-radius: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        cursor: pointer;
+        background: linear-gradient(to right, #f8f9fa, #e9ecef);
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .service-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        border-color: #74172d;
+    }
+
+    .service-logo {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 15px;
+        flex-shrink: 0;
+    }
+
+    .text-container {
+        background: #fff;
+        border-radius: 15px;
+        padding: 15px;
+        flex: 1;
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .service-card:hover .text-container {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(116, 23, 45, 0.5); }
+        70% { box-shadow: 0 0 0 15px rgba(116, 23, 45, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(116, 23, 45, 0); }
+    }
+
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+
+    .modal-content {
+        border-radius: 20px;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #74172d;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        cursor: pointer;
+    }
+
+    .modal .text-container {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 20px;
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .modal .text-container:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+    }
+
+</style>
+
+<div class="container py-5">
+    <h2 class="text-center mb-4 highlight">What are the Services we Offer?</h2>
+    <p class="text-center mb-5">TBIDO aims to support and nurture early-stage technology-based startups by providing a comprehensive ecosystem that fosters innovation and entrepreneurship.</p>
+
+    <div class="row g-4">
+
+        <!-- Startup Development -->
+        <div class="col-md-6">
+          <div class="service-card pulse" onclick="showModal('startupModal', 'Startup Development Section')">
+            <img src="{{ misc.13.picture.url }}" alt="Startup Logo" class="service-logo">
+            <div class="text-container">
+              <h5 class="highlight mb-2">Startup Development Section</h5>
+              <p>We spark Entrepreneurial journeys through Awareness, Design Thinking, Branding Support, and early Team-Market Readiness Level.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technology Development -->
+        <div class="col-md-6">
+          <div class="service-card pulse" onclick="showModal('techModal', 'Technology Development Section')">
+            <img src="{{ misc.14.picture.url }}" alt="Technology Logo" class="service-logo">
+            <div class="text-container">
+              <h5 class="highlight mb-2">Technology Development Section</h5>
+              <p>We assist R&D, Prototyping, Product Testing, with Expert Guidance, fueling Tech Refinement, and access to External Lab.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Incubation Management -->
+        <div class="col-md-6">
+          <div class="service-card pulse" onclick="showModal('incubationModal', 'Incubation Management Section')">
+            <img src="{{ misc.15.picture.url }}" alt="Incubation Logo" class="service-logo">
+            <div class="text-container">
+              <h5 class="highlight mb-2">Incubation Management Section</h5>
+              <p>We offer Tailored Business Mentorship, Registration, SRL Assessment, Seed Funding, and External Grants.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enterprise & Dev -->
+        <div class="col-md-6">
+          <div class="service-card pulse" onclick="showModal('enterpriseModal', 'Enterprise & Development Section')">
+            <img src="{{ misc.16.picture.url }}" alt="Enterprise Logo" class="service-logo">
+            <div class="text-container">
+              <h5 class="highlight mb-2">Enterprise & Development Section</h5>
+              <p>We boost Exposure, Partnerships, Co-Working Space Access, and Network Opportunities for Startups.</p>
+            </div>
+          </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Startup Modal -->
+<div class="modal fade" id="startupModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-4">
+      <button class="close-btn" onclick="hideModal('startupModal')">&times;</button>
+      <h4 class="highlight mb-3">Startup Development Section</h4>
+      <div class="text-container">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec gravida, arcu a sagittis dictum, ipsum urna tincidunt libero, sed ullamcorper justo nulla ac nisi. Aliquam erat volutpat.</p>
+      </div>
+
+      <!-- Form Starts Here -->
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Section 1 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 1: Personal & Contact Data</h5>
+
+          <!-- Full Name -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.full_name.label_tag }}
+            {{ form.full_name|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.email.label_tag }}
+            {{ form.email|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Phone Number -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.phone_number.label_tag }}
+            {{ form.phone_number|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Startup Company Name -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.startup_company_name.label_tag }}
+            {{ form.startup_company_name|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 2: Inquiry Details</h5>
+
+          <!-- TBIDO Section -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.tbido_section.label_tag }}
+            {{ form.tbido_section|add_class:"form-select rounded-3" }}
+          </div>
+
+          <!-- Hidden Service Field -->
+          <input type="hidden" id="serviceInput" name="service">
+
+          <!-- Subject of Inquiry -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.subject_of_inquiry.label_tag }}
+            {{ form.subject_of_inquiry|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Inquiry Description -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.inquiry_description.label_tag }}
+            {{ form.inquiry_description|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 3</h5>
+
+          <!-- Previously Interacted -->
+            <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+              <label class="form-label mb-2">Have you previously interacted with this section before?</label>
+              <div class="form-check">
+                {{ form.previously_interacted }} Tick the box if yes.
+              </div>
+            </div>
+
+            <!-- Preferred Communication -->
+            <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+              <p class="form-label mb-2">Preferred mode of communication:</p>
+              {% for checkbox in form.preferred_communication %}
+                <div class="form-check mb-2">
+                  {{ checkbox.tag }}
+                  {{ checkbox.choice_label }}
+                </div>
+              {% endfor %}
+            </div>
+
+          <!-- Supporting Documents -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.supporting_documents.label_tag }}
+            {{ form.supporting_documents|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary rounded-3 px-4 py-2">Submit Inquiry</button>
+      </form>
+      <!-- Form Ends Here -->
+    </div>
+  </div>
+</div>
+
+<!-- Other Modals remain unchanged -->
+<!-- Technology Modal -->
+<div class="modal fade" id="techModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-4">
+      <button class="close-btn" onclick="hideModal('techModal')">&times;</button>
+      <h4 class="highlight mb-3">Technology Development Section</h4>
+      <div class="text-container">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec gravida, arcu a sagittis dictum, ipsum urna tincidunt libero, sed ullamcorper justo nulla ac nisi. Aliquam erat volutpat.</p>
+      </div>
+      <!-- Form Starts Here -->
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Section 1 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 1: Personal & Contact Data</h5>
+
+          <!-- Full Name -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.full_name.label_tag }}
+            {{ form.full_name|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.email.label_tag }}
+            {{ form.email|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Phone Number -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.phone_number.label_tag }}
+            {{ form.phone_number|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Startup Company Name -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.startup_company_name.label_tag }}
+            {{ form.startup_company_name|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 2: Inquiry Details</h5>
+
+          <!-- TBIDO Section -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.tbido_section.label_tag }}
+            {{ form.tbido_section|add_class:"form-select rounded-3" }}
+          </div>
+
+          <!-- Hidden Service Field -->
+          <input type="hidden" id="serviceInput" name="service">
+
+          <!-- Subject of Inquiry -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.subject_of_inquiry.label_tag }}
+            {{ form.subject_of_inquiry|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Inquiry Description -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.inquiry_description.label_tag }}
+            {{ form.inquiry_description|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 3</h5>
+
+          <!-- Previously Interacted -->
+            <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+              <label class="form-label mb-2">Have you previously interacted with this section before?</label>
+              <div class="form-check">
+                {{ form.previously_interacted }} Tick the box if yes.
+              </div>
+            </div>
+
+            <!-- Preferred Communication -->
+            <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+              <p class="form-label mb-2">Preferred mode of communication:</p>
+              {% for checkbox in form.preferred_communication %}
+                <div class="form-check mb-2">
+                  {{ checkbox.tag }}
+                  {{ checkbox.choice_label }}
+                </div>
+              {% endfor %}
+            </div>
+
+          <!-- Supporting Documents -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.supporting_documents.label_tag }}
+            {{ form.supporting_documents|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary rounded-3 px-4 py-2">Submit Inquiry</button>
+      </form>
+      <!-- Form Ends Here -->
+    </div>
+  </div>
+</div>
+
+<!-- Incubation Modal -->
+<div class="modal fade" id="incubationModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-4">
+      <button class="close-btn" onclick="hideModal('incubationModal')">&times;</button>
+      <h4 class="highlight mb-3">Incubation Management Section</h4>
+      <div class="text-container">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec gravida, arcu a sagittis dictum, ipsum urna tincidunt libero, sed ullamcorper justo nulla ac nisi. Aliquam erat volutpat.</p>
+      </div>
+      <!-- Form Starts Here -->
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Section 1 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 1: Personal & Contact Data</h5>
+
+          <!-- Full Name -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.full_name.label_tag }}
+            {{ form.full_name|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.email.label_tag }}
+            {{ form.email|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Phone Number -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.phone_number.label_tag }}
+            {{ form.phone_number|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Startup Company Name -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.startup_company_name.label_tag }}
+            {{ form.startup_company_name|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 2: Inquiry Details</h5>
+
+          <!-- TBIDO Section -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.tbido_section.label_tag }}
+            {{ form.tbido_section|add_class:"form-select rounded-3" }}
+          </div>
+
+          <!-- Hidden Service Field -->
+          <input type="hidden" id="serviceInput" name="service">
+
+          <!-- Subject of Inquiry -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.subject_of_inquiry.label_tag }}
+            {{ form.subject_of_inquiry|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Inquiry Description -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.inquiry_description.label_tag }}
+            {{ form.inquiry_description|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 3</h5>
+
+          <!-- Previously Interacted -->
+            <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+              <label class="form-label mb-2">Have you previously interacted with this section before?</label>
+              <div class="form-check">
+                {{ form.previously_interacted }} Tick the box if yes.
+              </div>
+            </div>
+
+            <!-- Preferred Communication -->
+            <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+              <p class="form-label mb-2">Preferred mode of communication:</p>
+              {% for checkbox in form.preferred_communication %}
+                <div class="form-check mb-2">
+                  {{ checkbox.tag }}
+                  {{ checkbox.choice_label }}
+                </div>
+              {% endfor %}
+            </div>
+
+          <!-- Supporting Documents -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.supporting_documents.label_tag }}
+            {{ form.supporting_documents|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary rounded-3 px-4 py-2">Submit Inquiry</button>
+      </form>
+      <!-- Form Ends Here -->
+    </div>
+  </div>
+</div>
+
+<!-- Enterprise Modal -->
+<div class="modal fade" id="enterpriseModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-4">
+      <button class="close-btn" onclick="hideModal('enterpriseModal')">&times;</button>
+      <h4 class="highlight mb-3">Enterprise & Development Section</h4>
+      <div class="text-container">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec gravida, arcu a sagittis dictum, ipsum urna tincidunt libero, sed ullamcorper justo nulla ac nisi. Aliquam erat volutpat.</p>
+      </div>
+      <!-- Form Starts Here -->
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Section 1 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 1: Personal & Contact Data</h5>
+
+          <!-- Full Name -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.full_name.label_tag }}
+            {{ form.full_name|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.email.label_tag }}
+            {{ form.email|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Phone Number -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.phone_number.label_tag }}
+            {{ form.phone_number|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Startup Company Name -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.startup_company_name.label_tag }}
+            {{ form.startup_company_name|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 2: Inquiry Details</h5>
+
+          <!-- TBIDO Section -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.tbido_section.label_tag }}
+            {{ form.tbido_section|add_class:"form-select rounded-3" }}
+          </div>
+
+          <!-- Hidden Service Field -->
+          <input type="hidden" id="serviceInput" name="service">
+
+          <!-- Subject of Inquiry -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.subject_of_inquiry.label_tag }}
+            {{ form.subject_of_inquiry|add_class:"form-control rounded-3" }}
+          </div>
+
+          <!-- Inquiry Description -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.inquiry_description.label_tag }}
+            {{ form.inquiry_description|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="p-3 mb-3 border rounded" style="border: 2px solid; border-image: linear-gradient(to right, #b35066, #6a7ab7) 1;">
+          <h5 class="highlight">Section 3</h5>
+
+          <!-- Previously Interacted -->
+            <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+              <label class="form-label mb-2">Have you previously interacted with this section before?</label>
+              <div class="form-check">
+                {{ form.previously_interacted }} Tick the box if yes.
+              </div>
+            </div>
+
+            <!-- Preferred Communication -->
+            <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+              <p class="form-label mb-2">Preferred mode of communication:</p>
+              {% for checkbox in form.preferred_communication %}
+                <div class="form-check mb-2">
+                  {{ checkbox.tag }}
+                  {{ checkbox.choice_label }}
+                </div>
+              {% endfor %}
+            </div>
+
+          <!-- Supporting Documents -->
+          <div class="mb-3 p-3 rounded-3 shadow-sm bg-light">
+            {{ form.supporting_documents.label_tag }}
+            {{ form.supporting_documents|add_class:"form-control rounded-3" }}
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary rounded-3 px-4 py-2">Submit Inquiry</button>
+      </form>
+      <!-- Form Ends Here -->
+    </div>
+  </div>
+</div>
+
+<!-- Script to auto-fill service -->
+<script>
+  function showModal(modalId, serviceName) {
+    // Set the hidden input value
+    document.getElementById('serviceInput').value = serviceName;
+
+    // Show modal
+    var modal = new bootstrap.Modal(document.getElementById(modalId));
+    modal.show();
+  }
+
+  function hideModal(modalId) {
+    var modalEl = document.getElementById(modalId);
+    var modal = bootstrap.Modal.getInstance(modalEl);
+    modal.hide();
+  }
+</script>
+
+{% endblock %}
